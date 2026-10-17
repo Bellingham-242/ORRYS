@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <title>{% block title %}ORRYS Numerique | Expertise IT & Formation{% endblock %}</title>
     
-    <!-- Viewport adaptatif professionnel pour tous les téléphones, tablettes et PC -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- FORCER LE MODE ORDINATEUR PAR DÉFAUT SUR TOUS LES TÉLÉPHONES -->
+    <meta name="viewport" content="width=1280, initial-scale=0.35, minimum-scale=0.25, maximum-scale=3.0, user-scalable=yes">
 
     <meta content="Informatique, Formation, Développement, Maintenance, ORRYS Numerique" name="keywords">
     <meta content="ORRYS Numerique : Votre partenaire de confiance pour les services informatiques, la formation technologique et l'accompagnement digital." name="description">
@@ -45,36 +45,43 @@
             --border-color: #E2E8F0;
         }
 
+        /* VERROUILLAGE DE LA MISE EN PAGE MODE DESKTOP ORDINATEUR SUR MOBILE */
         html, body {
-            margin: 0;
-            padding: 0;
+            min-width: 1280px !important;
+            width: 1280px !important;
+            margin: 0 auto !important;
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--light);
             color: #334155;
-            overflow-x: hidden;
+            overflow-x: auto !important;
         }
 
-        /* --- NAVBAR RESPONSIVE PREMIUM --- */
+        /* --- NAVBAR SAAS DESKTOP --- */
         .custom-navbar {
-            background-color: rgba(255, 255, 255, 0.96) !important; 
+            background-color: rgba(255, 255, 255, 0.98) !important; 
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 4px 20px rgba(15, 23, 43, 0.04);
-            min-height: 80px;
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 25px rgba(15, 23, 43, 0.05);
+            height: 90px;
+            width: 100%;
+        }
+
+        .navbar-brand {
+            padding-right: 2rem;
+            border-right: 1px solid var(--border-color);
         }
 
         .navbar-brand img {
-            height: 42px !important;
+            height: 46px !important;
             width: auto !important;
-            max-width: 160px;
+            max-width: 180px;
             object-fit: contain;
             transition: transform 0.3s ease;
         }
 
         .brand-title {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 800;
             background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
             -webkit-background-clip: text;
@@ -82,15 +89,14 @@
             letter-spacing: -0.5px;
         }
 
-        /* LIENS DE NAVIGATION SAAS */
         .nav-link-saas {
             font-family: 'Inter', sans-serif;
             font-weight: 600;
             font-size: 0.92rem;
             color: #475569 !important;
-            padding: 0.6rem 1rem !important;
+            padding: 0.65rem 1.1rem !important;
             border-radius: 10px;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
@@ -99,6 +105,7 @@
         .nav-link-saas:hover {
             color: var(--primary) !important;
             background-color: rgba(0, 183, 241, 0.08);
+            transform: translateY(-1px);
         }
 
         .nav-link-saas.active {
@@ -107,12 +114,12 @@
             font-weight: 700;
         }
 
-        /* DROPDOWN MENU */
         .saas-dropdown {
             border: 1px solid var(--border-color);
             border-radius: 14px;
             box-shadow: 0 15px 35px rgba(15, 23, 43, 0.1);
             padding: 0.6rem;
+            margin-top: 0.8rem;
             background: #ffffff;
             min-width: 200px;
         }
@@ -142,12 +149,11 @@
             color: var(--dark);
             font-weight: 700;
             font-size: 0.85rem;
-            padding: 0.65rem 1.15rem;
+            padding: 0.7rem 1.25rem;
             border-radius: 10px;
             border: 1px solid var(--border-color);
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 0.5rem;
             transition: all 0.25s ease;
             cursor: pointer;
@@ -157,6 +163,7 @@
             background-color: var(--dark);
             color: #ffffff;
             border-color: var(--dark);
+            transform: translateY(-2px);
         }
 
         .nav-btn-start {
@@ -164,20 +171,59 @@
             color: #ffffff !important;
             font-weight: 700;
             font-size: 0.88rem;
-            padding: 0.65rem 1.35rem;
+            padding: 0.7rem 1.5rem;
             border-radius: 10px;
             border: none;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 0.5rem;
-            box-shadow: 0 4px 14px rgba(0, 183, 241, 0.25);
+            box-shadow: 0 4px 14px rgba(0, 183, 241, 0.3);
             transition: all 0.25s ease;
         }
 
         .nav-btn-start:hover {
             background: linear-gradient(135deg, var(--secondary) 0%, #8C1533 100%);
             color: #ffffff !important;
+            transform: translateY(-2px);
+        }
+
+        /* CORRECTION ET DESIGN SUBLIME POUR LE BOUTON FLÈCHE REMONTER EN HAUT */
+        .back-to-top {
+            position: fixed !important;
+            bottom: 30px !important;
+            right: 30px !important;
+            width: 52px !important;
+            height: 52px !important;
+            border-radius: 50% !important;
+            background: linear-gradient(135deg, var(--primary) 0%, #0093C4 100%) !important;
+            color: #ffffff !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 8px 25px rgba(0, 183, 241, 0.4) !important;
+            z-index: 9999 !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            border: 2px solid #ffffff !important;
+            text-decoration: none !important;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background: var(--dark) !important;
+            color: #ffffff !important;
+            transform: translateY(-5px) scale(1.08) !important;
+            box-shadow: 0 12px 30px rgba(15, 23, 43, 0.35) !important;
+        }
+
+        .back-to-top i {
+            font-size: 1.4rem !important;
+            line-height: 1 !important;
         }
 
         /* MODALES PWA */
@@ -185,37 +231,6 @@
             background: linear-gradient(135deg, var(--dark) 0%, #172554 100%);
             color: white;
             border-radius: 16px 16px 0 0;
-        }
-
-        /* ADAPTATION MOBILE ET TABLETTE DU MENU (RESPONSIVE DE QUALITÉ) */
-        @media (max-width: 991.98px) {
-            .navbar-collapse {
-                background: #ffffff;
-                padding: 1.25rem;
-                border-radius: 16px;
-                margin-top: 0.75rem;
-                border: 1px solid var(--border-color);
-                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
-            }
-
-            .nav-link-saas {
-                padding: 0.75rem 1rem !important;
-                width: 100%;
-            }
-
-            .mobile-actions-wrapper {
-                flex-direction: column;
-                width: 100%;
-                gap: 0.75rem !important;
-                margin-top: 1rem;
-                padding-top: 1rem;
-                border-top: 1px solid var(--border-color);
-            }
-
-            .btn-pwa-download, .nav-btn-start {
-                width: 100%;
-                padding: 0.8rem 1rem;
-            }
         }
     </style>
 </head>
@@ -228,65 +243,58 @@
         </div>
     </div>
 
-    <!-- NAVBAR RESPONSIVE FLUIDE -->
-    <nav class="navbar navbar-expand-lg sticky-top custom-navbar">
-        <div class="container-fluid px-3 px-md-5">
-            <!-- Logo & Brand -->
-            <a href="{% url 'index' %}" class="navbar-brand d-flex align-items-center gap-2 m-0">
+    <!-- NAVBAR ORDINATEUR FIXE (SANS MENU HAMBURGER) -->
+    <nav class="navbar sticky-top custom-navbar">
+        <div class="container-fluid px-5 d-flex align-items-center justify-content-between">
+            <!-- Brand / Logo -->
+            <a href="{% url 'index' %}" class="navbar-brand d-flex align-items-center gap-3">
                 <img src="{% static 'img/image.png' %}" alt="Logo ORRYS" class="logo-img">
                 <h4 class="m-0 brand-title">ORRYS Numerique</h4>
             </a>
 
-            <!-- Bouton Menu Hamburger Mobile -->
-            <button class="navbar-toggler border-0 shadow-none p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="bi bi-list fs-2 text-dark"></i>
-            </button>
-
-            <!-- Menu Déroulant / Navigation -->
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto gap-1 py-2 py-lg-0 align-items-lg-center">
-                    <a href="{% url 'index' %}" class="nav-link-saas active">
-                        <i class="bi bi-house-door fs-6"></i> Accueil
+            <!-- Liens de Navigation Horizontaux -->
+            <div class="d-flex align-items-center gap-2 ms-auto me-4">
+                <a href="{% url 'index' %}" class="nav-link-saas active">
+                    <i class="bi bi-house-door fs-6"></i> Accueil
+                </a>
+                <a href="{% url 'about' %}" class="nav-link-saas">
+                    <i class="bi bi-building fs-6"></i> Agence
+                </a>
+                <a href="{% url 'services' %}" class="nav-link-saas">
+                    <i class="bi bi-cpu fs-6"></i> Expertise
+                </a>
+                
+                <!-- Dropdown Actus -->
+                <div class="dropdown">
+                    <a href="#" class="nav-link-saas dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-newspaper fs-6"></i> Actus
                     </a>
-                    <a href="{% url 'about' %}" class="nav-link-saas">
-                        <i class="bi bi-building fs-6"></i> Agence
-                    </a>
-                    <a href="{% url 'services' %}" class="nav-link-saas">
-                        <i class="bi bi-cpu fs-6"></i> Expertise
-                    </a>
-                    
-                    <!-- Dropdown Actus -->
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link-saas dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-newspaper fs-6"></i> Actus
+                    <div class="dropdown-menu saas-dropdown m-0">
+                        <a href="{% url 'team' %}" class="saas-dropdown-item">
+                            <i class="bi bi-people text-primary"></i> Équipe
                         </a>
-                        <div class="dropdown-menu saas-dropdown m-0">
-                            <a href="{% url 'team' %}" class="saas-dropdown-item">
-                                <i class="bi bi-people text-primary"></i> Équipe
-                            </a>
-                            <a href="{% url 'testimonials' %}" class="saas-dropdown-item">
-                                <i class="bi bi-journal-text text-primary"></i> Blog & Témoignages
-                            </a>
-                        </div>
+                        <a href="{% url 'testimonials' %}" class="saas-dropdown-item">
+                            <i class="bi bi-journal-text text-primary"></i> Blog & Témoignages
+                        </a>
                     </div>
-
-                    <a href="{% url 'contact' %}" class="nav-link-saas">
-                        <i class="bi bi-envelope fs-6"></i> Contact
-                    </a>
                 </div>
 
-                <!-- Boutons d'action -->
-                <div class="d-flex align-items-center gap-2 ms-lg-3 mobile-actions-wrapper">
-                    <button type="button" id="btnInstallPWA" class="btn-pwa-download" title="Installer l'application sur votre appareil">
-                        <i class="bi bi-download text-primary fs-6"></i>
-                        <span>Installer l'App</span>
-                    </button>
+                <a href="{% url 'contact' %}" class="nav-link-saas">
+                    <i class="bi bi-envelope fs-6"></i> Contact
+                </a>
+            </div>
 
-                    <a href="{% url 'login' %}" class="nav-btn-start text-decoration-none">
-                        <span>Démarrer</span>
-                        <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
+            <!-- Actions d'accès & PWA -->
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" id="btnInstallPWA" class="btn-pwa-download" title="Installer l'application sur votre appareil">
+                    <i class="bi bi-download text-primary fs-6"></i>
+                    <span>Installer l'App</span>
+                </button>
+
+                <a href="{% url 'login' %}" class="nav-btn-start text-decoration-none">
+                    <span>Démarrer</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
             </div>
         </div>
     </nav>
@@ -294,10 +302,10 @@
     {% block content %}
     {% endblock %}
 
-    <!-- FOOTER DYNAMIQUE (ADMIN) -->
+    <!-- FOOTER DYNAMIQUE -->
     <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
         <div class="container py-5">
-            <div class="row g-4 g-lg-5">
+            <div class="row g-5">
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-white mb-3">ORRYS Numerique</h4>
                     <p>{{ config.footer_about|default:"Votre partenaire vers l'excellence digitale. Services IT sur mesure et formations certifiantes." }}</p>
@@ -331,9 +339,12 @@
         </div>
     </div>
 
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top rounded-circle"><i class="bi bi-arrow-up"></i></a>
+    <!-- BOUTON DE RETOUR EN HAUT PARFAITEMENT POSITIONNÉ ET DESIGNED -->
+    <a href="#" class="back-to-top" title="Remonter en haut">
+        <i class="bi bi-arrow-up-short"></i>
+    </a>
 
-    <!-- Modale d'instructions pour iOS (Safari) -->
+    <!-- Modale d'instructions iOS -->
     <div class="modal fade" id="modalIOSInstall" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -354,7 +365,7 @@
         </div>
     </div>
 
-    <!-- Modale d'aide pour l'installation sur PC / Mobile (Edge / Chrome) -->
+    <!-- Modale d'instructions PC / Desktop -->
     <div class="modal fade" id="modalDesktopInstall" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -367,16 +378,13 @@
                     <p class="small text-muted mb-3">Pour installer l'application sur votre appareil :</p>
                     <ol class="small vstack gap-3 ps-3 mb-4">
                         <li>
-                            Dans la barre d'adresse ou le menu du navigateur : cliquez sur l'icône d'installation 
-                            <i class="bi bi-display text-primary fs-5 align-middle ms-1"></i> ou <strong>Ajouter à l'écran d'accueil</strong>.
+                            Regardez à droite de la barre d'adresse (URL) : cliquez sur l'icône d'installation 
+                            <i class="bi bi-display text-primary fs-5 align-middle ms-1"></i>.
                         </li>
                         <li>
-                            Sur PC, vous pouvez aussi cliquer sur les <strong>trois petits points (...)</strong> &gt; <strong>Applications</strong> &gt; <strong>Installer ce site</strong>.
+                            Ou cliquez sur les <strong>trois petits points (...)</strong> &gt; <strong>Applications</strong> &gt; <strong>Installer ce site</strong>.
                         </li>
                     </ol>
-                    <div class="alert alert-info py-2 small mb-0 rounded-3">
-                        <i class="bi bi-info-circle me-1"></i> L'application fonctionne en mode natif et enregistre vos accès rapidement.
-                    </div>
                 </div>
             </div>
         </div>
@@ -391,8 +399,23 @@
     <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
 
-    <!-- Service Worker & PWA Logic -->
+    <!-- Gestion du défilement et affichage dynamique du bouton de retour en haut -->
     <script>
+        $(window).scroll(function () {
+            if ($(this).scrollTop() > 300) {
+                $('.back-to-top').addClass('show');
+            } else {
+                $('.back-to-top').removeClass('show');
+            }
+        });
+
+        $('.back-to-top').click(function (e) {
+            e.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 600, 'easeInOutExpo');
+            return false;
+        });
+
+        // Enregistrement du Service Worker PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register("{% static 'sw.js' %}")
