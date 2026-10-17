@@ -10,11 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -23,7 +18,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-i4zdv4luu!(nkqzamx0^c)g(!a8x&m4pm6_$utl)*olaj7v6#z'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media' # Utilise l'opérateur / avec Pathlib
+
+
+DEBUG = True
 
 ALLOWED_HOSTS = ['orrysnumerique.pythonanywhere.com', '127.0.0.1', 'localhost']
 
@@ -116,13 +119,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 # settings.py
-from pathlib import Path
-import os
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media' # Utilise l'opérateur / avec Pathlib
 
 import os  # Vérifiez que "import os" est bien en haut de votre fichier settings.py
 
