@@ -1,0 +1,84 @@
+{% extends 'dashboards/base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh; animation: fadeIn 0.4s ease-out;">
+    <div class="col-md-6 col-lg-5">
+        
+        <div class="card border-0 shadow-lg" style="border-radius: 24px; overflow: hidden; background: #ffffff;">
+            
+            <div class="bg-danger p-4 text-center text-white position-relative">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-25" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px);"></div>
+                <i class="bi bi-shield-fill-exclamation display-3 position-relative z-1"></i>
+                <h3 class="fw-800 mt-3 position-relative z-1" style="letter-spacing: -0.5px;">Zone de Danger</h3>
+                <p class="mb-0 small position-relative z-1 fw-bold text-white-50">Suppression Définitive Requise</p>
+            </div>
+
+            <div class="card-body p-4 p-lg-5">
+                
+                <div class="text-center mb-4">
+                    <p class="text-muted small text-uppercase fw-bold mb-2">Cible de la suppression</p>
+                    <div class="p-3 rounded-4 border" style="background: #F8FAFC; border-color: #E2E8F0 !important;">
+                        <h4 class="fw-900 text-dark mb-1">{{ transaction.montant }} FCFA</h4>
+                        <p class="text-secondary small fw-bold mb-2">{{ transaction.motif }}</p>
+                        <span class="badge {% if transaction.type == 'ENTREE' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %} rounded-pill">
+                            Flux : {{ transaction.get_type_display|default:transaction.type }}
+                        </span>
+                    </div>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="security-zone p-4 mb-4 text-center" style="background: #FEF2F2; border: 2px dashed #FCA5A5; border-radius: 16px;">
+                        <label class="d-block text-danger fw-bold small text-uppercase mb-3" style="letter-spacing: 1px;">
+                            Recopiez le code d'autorisation
+                        </label>
+                        
+                        <div class="d-flex justify-content-center align-items-center mb-3">
+                            <span class="bg-white text-danger border border-danger px-4 py-2 fs-2 fw-900 shadow-sm" style="border-radius: 12px; letter-spacing: 8px; font-family: 'JetBrains Mono', monospace;">
+                                {{ code_requis|default:security_code }}
+                            </span>
+                        </div>
+
+                        <input type="text" name="mot_validation" 
+                               class="form-control form-control-lg text-center fw-bold shadow-none" 
+                               placeholder="Saisissez le code ici..." required
+                               style="border-radius: 12px; border: 2px solid #FCA5A5; text-transform: uppercase; font-size: 1.2rem; letter-spacing: 2px;">
+                    </div>
+
+                    <div class="d-grid gap-3 mt-4">
+                        <button type="submit" class="btn btn-danger btn-lg fw-bold d-flex justify-content-center align-items-center gap-2" style="border-radius: 14px; padding: 1rem;">
+                            <i class="bi bi-trash3-fill"></i>
+                            Exécuter la suppression
+                        </button>
+                        <a href="{% url 'gestion_caisse' %}" class="btn btn-light btn-lg fw-bold text-secondary" style="border-radius: 14px; padding: 1rem;">
+                            Annuler et retourner
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="text-center text-muted mt-4 small fw-bold">
+            <i class="bi bi-lock-fill"></i> Action réservée à l'Administrateur
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    .fw-800 { font-weight: 800; }
+    .fw-900 { font-weight: 900; }
+    
+    /* Focus sur l'input de sécurité */
+    input[name="mot_validation"]:focus {
+        border-color: #EF4444 !important;
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15) !important;
+        background-color: #fff !important;
+    }
+</style>
+{% endblock %}

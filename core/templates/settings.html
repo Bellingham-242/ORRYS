@@ -1,0 +1,357 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration de la Plateforme</title>
+    
+    <!-- Typographie Premium : Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            /* Palette SaaS Premium */
+            --bg-body: #f3f4f6;
+            --surface-color: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border-light: #e5e7eb;
+            --primary-brand: #4f46e5; /* Indigo */
+            --primary-hover: #4338ca;
+            --ring-color: rgba(79, 70, 229, 0.15);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.25rem;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Layout & Header */
+        .page-header {
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--border-light);
+            padding: 1.25rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Boutons Premium */
+        .btn {
+            font-weight: 500;
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius-md);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-brand {
+            background-color: var(--primary-brand);
+            color: white;
+            border: none;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-brand:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        .btn-outline-secondary {
+            background-color: white;
+            border: 1px solid var(--border-light);
+            color: var(--text-main);
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-outline-secondary:hover {
+            background-color: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        /* Onglets style MacOS/iOS (Segmented Control) */
+        .segmented-control {
+            background-color: #f3f4f6;
+            padding: 0.375rem;
+            border-radius: var(--radius-lg);
+            display: inline-flex;
+            gap: 0.25rem;
+            border: 1px solid #e5e7eb;
+        }
+        .segmented-control .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+        }
+        .segmented-control .nav-link:hover:not(.active) {
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        .segmented-control .nav-link.active {
+            background-color: var(--surface-color);
+            color: var(--text-main);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        /* Cartes & Conteneurs */
+        .glass-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Formulaires Premium */
+        .form-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        .form-control, .input-group-text {
+            border: 1px solid var(--border-light);
+            background-color: #f9fafb;
+            font-size: 0.95rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            color: var(--text-main);
+            transition: all 0.2s ease;
+        }
+        textarea.form-control {
+            line-height: 1.6;
+        }
+        .input-group-text {
+            background-color: #f3f4f6;
+            color: var(--text-muted);
+            border-right: none;
+            padding-right: 0.5rem;
+        }
+        .input-group .form-control {
+            border-left: none;
+            padding-left: 0.5rem;
+        }
+        .form-control:focus, .input-group:focus-within .form-control, .input-group:focus-within .input-group-text {
+            background-color: var(--surface-color);
+            border-color: var(--primary-brand);
+            outline: none;
+            box-shadow: none;
+        }
+        .input-group:focus-within {
+            box-shadow: 0 0 0 4px var(--ring-color);
+            border-radius: var(--radius-md);
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 4px var(--ring-color);
+        }
+
+        /* Sections Iconisées */
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            color: var(--primary-brand);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid rgba(79, 70, 229, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- En-tête Fixe Premium -->
+        <header class="page-header">
+            <div class="container-lg d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-4">
+                    <a href="{% url 'admin_dashboard' %}" class="text-muted text-decoration-none transition" title="Retour">
+                        <i class="bi bi-arrow-left fs-5 hover-dark"></i>
+                    </a>
+                    <div>
+                        <h1 class="h4 mb-0 fw-bold">Configuration Système</h1>
+                        <span class="text-muted small">Gérez les paramètres globaux de votre environnement</span>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3">
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary">
+                        Ignorer
+                    </a>
+                    <button type="submit" class="btn btn-brand">
+                        <i class="bi bi-check2-circle"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="container-lg py-5">
+            
+            <!-- Navigation Segments -->
+            <div class="d-flex justify-content-center mb-5">
+                <ul class="nav segmented-control" id="configTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main-content" type="button" role="tab">
+                            <i class="bi bi-building me-2"></i> Identité & Contact
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="social-tab" data-bs-toggle="tab" data-bs-target="#social-content" type="button" role="tab">
+                            <i class="bi bi-globe me-2"></i> Réseaux Sociaux
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Contenu des Segments -->
+            <div class="tab-content">
+                
+                <!-- Identité & Contact -->
+                <div class="tab-pane fade show active" id="main-content" role="tabpanel">
+                    <div class="row g-4">
+                        
+                        <!-- Bloc Identité -->
+                        <div class="col-lg-7">
+                            <div class="glass-card h-100">
+                                <div class="section-icon">
+                                    <i class="bi bi-card-text"></i>
+                                </div>
+                                <h3 class="h5 fw-bold mb-1">Présentation de la Marque</h3>
+                                <p class="text-muted small mb-4">Définissez le texte qui représentera votre entité dans le pied de page public.</p>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">À propos de l'entreprise</label>
+                                    <textarea name="footer_about" class="form-control" rows="5" placeholder="Saisissez une description percutante...">{{ config.footer_about|default:'' }}</textarea>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">Mention Légale (Copyright)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-c-circle"></i></span>
+                                        <input type="text" name="footer_copyright" class="form-control" value="{{ config.footer_copyright|default:'© 2026 ORRYS Numérique. Tous droits réservés.' }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bloc Coordonnées -->
+                        <div class="col-lg-5">
+                            <div class="glass-card h-100">
+                                <div class="section-icon">
+                                    <i class="bi bi-geo-alt"></i>
+                                </div>
+                                <h3 class="h5 fw-bold mb-1">Coordonnées Officielles</h3>
+                                <p class="text-muted small mb-4">Les canaux directs pour joindre votre support.</p>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Ligne directe / WhatsApp</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                        <input type="text" name="company_phone" class="form-control" value="{{ config.company_phone|default:'' }}" placeholder="+242 06 ...">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Adresse Électronique</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope-at"></i></span>
+                                        <input type="email" name="company_email" class="form-control" value="{{ config.company_email|default:'' }}" placeholder="contact@domaine.com">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">Siège Social</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-building"></i></span>
+                                        <input type="text" name="company_address" class="form-control" value="{{ config.company_address|default:'' }}" placeholder="Ex: Pointe-Noire, Congo">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Réseaux Sociaux -->
+                <div class="tab-pane fade" id="social-content" role="tabpanel">
+                    <div class="glass-card mx-auto" style="max-width: 800px;">
+                        <div class="section-icon mx-auto mb-3">
+                            <i class="bi bi-share"></i>
+                        </div>
+                        <div class="text-center mb-5">
+                            <h3 class="h5 fw-bold mb-1">Présence Numérique</h3>
+                            <p class="text-muted small">Laissez un champ vide pour désactiver l'icône correspondante sur le site.</p>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Facebook</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-facebook text-primary"></i></span>
+                                    <input type="url" name="social_facebook" class="form-control" value="{{ config.social_facebook|default:'' }}" placeholder="https://facebook.com/votre-page">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">WhatsApp Business</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-whatsapp text-success"></i></span>
+                                    <input type="text" name="social_whatsapp" class="form-control" value="{{ config.social_whatsapp|default:'' }}" placeholder="Numéro avec indicatif">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">LinkedIn</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-linkedin text-primary"></i></span>
+                                    <input type="url" name="social_linkedin" class="form-control" value="{{ config.social_linkedin|default:'' }}" placeholder="URL de la page entreprise">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Instagram</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-instagram text-danger"></i></span>
+                                    <input type="url" name="social_instagram" class="form-control" value="{{ config.social_instagram|default:'' }}" placeholder="https://instagram.com/votre-compte">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

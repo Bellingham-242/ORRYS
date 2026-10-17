@@ -1,0 +1,355 @@
+{% extends 'dashboards/base_dashboard.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* Effets de survol et cartes modernes */
+    .hover-lift {
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    /* Stat Cards */
+    .stat-icon-wrapper {
+        width: 52px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+    }
+
+    /* Timeline du rapport */
+    .timeline-container {
+        position: relative;
+        padding-left: 1.75rem;
+    }
+    .timeline-container::before {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 10px;
+        bottom: 10px;
+        width: 2px;
+        background: #E2E8F0;
+    }
+    .timeline-dot {
+        position: absolute;
+        left: -1.75rem;
+        top: 4px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background-color: var(--brand-primary, #00B7F1);
+        border: 3px solid #FFFFFF;
+        box-shadow: 0 0 0 3px rgba(0, 183, 241, 0.2);
+    }
+
+    /* Zone de téléversement fichier dans la modale */
+    .file-upload-wrapper {
+        border: 2px dashed #CBD5E1;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        background-color: #F8FAFC;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .file-upload-wrapper:hover {
+        border-color: var(--brand-primary, #00B7F1);
+        background-color: rgba(0, 183, 241, 0.03);
+    }
+
+    .font-monospace-num {
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        letter-spacing: -0.5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+
+    <!-- En-tête Espace Collaborateur -->
+    <div class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center mb-4 gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h2 class="fw-800 text-dark mb-0">Espace Collaborateur</h2>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 fs-6">Actif</span>
+            </div>
+            <p class="text-muted mb-0">Ravi de vous revoir, <strong class="text-dark">{{ user.first_name|default:user.username }}</strong> ! Voici le point sur vos activités.</p>
+        </div>
+        <div>
+            <button class="btn btn-primary rounded-3 fw-bold px-4 py-2-5 d-inline-flex align-items-center gap-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#reportModal">
+                <i class="bi bi-plus-lg fs-6"></i>
+                <span>Soumettre un Rapport</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Grille de Statistique KPI -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white hover-lift h-100">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon-wrapper bg-primary-subtle text-primary me-3 fs-4">
+                        <i class="bi bi-journal-text"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted text-uppercase fw-bold text-xxs tracking-wider d-block mb-1">Rapports Soumis</span>
+                        <h3 class="fw-800 text-dark mb-0 font-monospace-num">{{ total_rapports|default:"0" }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white hover-lift h-100">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon-wrapper bg-success-subtle text-success me-3 fs-4">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted text-uppercase fw-bold text-xxs tracking-wider d-block mb-1">Opérations Caisse</span>
+                        <h3 class="fw-800 text-dark mb-0 font-monospace-num">{{ mes_activites_caisse.count }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white hover-lift h-100">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon-wrapper bg-info-subtle text-info me-3 fs-4">
+                        <i class="bi bi-megaphone-fill"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted text-uppercase fw-bold text-xxs tracking-wider d-block mb-1">Notes & Comm.</span>
+                        <h3 class="fw-800 text-dark mb-0 font-monospace-num">{{ publications_locales.count }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenu Principal -->
+    <div class="row g-4">
+        <!-- Colonne Gauche : Historique & Caisse -->
+        <div class="col-lg-8">
+            
+            <!-- Section Timeline des Rapports -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-800 text-dark mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-clock-history text-primary"></i> Historique de mes rapports
+                    </h5>
+                    {% if mes_rapports %}
+                        <span class="badge bg-light text-muted fw-bold border px-3 py-2 rounded-3">{{ mes_rapports|length }} disponible{{ mes_rapports|length|pluralize }}</span>
+                    {% endif %}
+                </div>
+
+                {% if mes_rapports %}
+                    <div class="timeline-container">
+                        {% for r in mes_rapports %}
+                        <div class="mb-4 position-relative">
+                            <div class="timeline-dot"></div>
+                            
+                            <div class="p-3 bg-light rounded-4 border-0">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="fw-bold text-dark mb-0">{{ r.title }}</h6>
+                                    <span class="badge bg-white text-muted border fw-semibold ms-2 flex-shrink-0">
+                                        <i class="bi bi-calendar3 me-1"></i>{{ r.date_submission|date:"d M Y à H:i" }}
+                                    </span>
+                                </div>
+                                
+                                <p class="text-secondary small mb-3 leading-relaxed">{{ r.content|linebreaksbr }}</p>
+
+                                {% if r.image %}
+                                <div class="mt-2">
+                                    <a href="{{ r.image.url }}" target="_blank" class="d-inline-block rounded-3 overflow-hidden border shadow-sm" style="max-width: 280px; max-height: 160px;">
+                                        <img src="{{ r.image.url }}" alt="Preuve justificative" class="img-fluid object-fit-cover w-100 h-100">
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <div class="avatar-circle mx-auto mb-3 bg-light text-muted" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Aucun rapport transmis</h6>
+                        <p class="text-muted small mb-3">Vous n'avez pas encore soumis de rapport d'activité récents.</p>
+                        <button class="btn btn-sm btn-outline-primary fw-bold rounded-3" data-bs-toggle="modal" data-bs-target="#reportModal">
+                            Créer mon premier rapport
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Section Opérations de Caisse -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-800 text-dark mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-receipt-cutoff text-success"></i> Mes dernières opérations de caisse
+                    </h5>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-uppercase fs-7 text-muted">
+                            <tr>
+                                <th scope="col" class="py-3 ps-3 border-0 rounded-start-3">Motif & Date</th>
+                                <th scope="col" class="py-3 border-0">Type</th>
+                                <th scope="col" class="py-3 pe-3 text-end border-0 rounded-end-3">Montant</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in mes_activites_caisse %}
+                            <tr>
+                                <td class="ps-3 py-3">
+                                    <span class="fw-bold text-dark d-block mb-0">{{ t.motif }}</span>
+                                    <span class="text-muted text-xxs d-flex align-items-center gap-1">
+                                        <i class="bi bi-clock"></i> {{ t.date_creation|date:"d M Y, H:i" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if t.type == 'ENTREE' %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+                                            <i class="bi bi-arrow-down-left me-1"></i> Encaissement
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1">
+                                            <i class="bi bi-arrow-up-right me-1"></i> Décaissement
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="pe-3 text-end fw-800 font-monospace-num fs-6 {% if t.type == 'ENTREE' %}text-success{% else %}text-danger{% endif %}">
+                                    {% if t.type == 'ENTREE' %}+{% else %}-{% endif %}{{ t.montant }} <small class="fw-normal fs-7">FCFA</small>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-3 text-muted opacity-50 d-block mb-2"></i>
+                                    <span class="small">Aucune transaction enregistrée pour le moment.</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Colonne Droite : Notes Internes -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 90px;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-800 text-dark mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-info-circle-fill text-info"></i> Notes Internes
+                    </h5>
+                </div>
+
+                {% for p in publications_locales %}
+                <div class="p-3 bg-light rounded-4 mb-3 border-start border-4 border-info">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-info-subtle text-info text-uppercase fw-bold" style="font-size: 0.65rem;">Annonce</span>
+                        <span class="text-muted text-xxs"><i class="bi bi-calendar-event me-1"></i>{{ p.date_creation|date:"d M Y" }}</span>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-2">{{ p.title }}</h6>
+                    <p class="text-secondary small mb-0 leading-relaxed">{{ p.content|linebreaksbr }}</p>
+
+                    {% if p.image %}
+                    <div class="mt-3 rounded-3 overflow-hidden border">
+                        <img src="{{ p.image.url }}" alt="Publication" class="img-fluid w-100">
+                    </div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="text-center py-5">
+                    <i class="bi bi-bell-slash text-muted opacity-25" style="font-size: 3rem;"></i>
+                    <h6 class="fw-bold text-dark mt-3 mb-1">Aucune note de service</h6>
+                    <p class="text-muted small mb-0">Toutes les annonces d'équipe apparaîtront dans cette section.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modale de Soumission de Rapport -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+            <div class="modal-header border-bottom p-4 bg-light">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary text-white rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                        <i class="bi bi-file-earmark-plus-fill fs-5"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-800 text-dark mb-0" id="reportModalLabel">Nouveau Rapport</h5>
+                        <p class="text-muted text-xxs mb-0">Transmettre vos activités ou incidents au responsable</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+
+            <form action="{% url 'soumettre_rapport' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label for="id_title" class="form-label small fw-bold text-dark">Titre du rapport <span class="text-danger">*</span></label>
+                        <input type="text" name="title" id="id_title" class="form-control rounded-3 py-2 px-3" placeholder="Ex: Synthèse des interventions de l'après-midi" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_content" class="form-label small fw-bold text-dark">Détail des activités <span class="text-danger">*</span></label>
+                        <textarea name="content" id="id_content" rows="4" class="form-control rounded-3 p-3" placeholder="Rédigez ici le détail synthétique de vos actions, résultats ou anomalies observées..." required></textarea>
+                    </div>
+
+                    <div class="mb-0">
+                        <label class="form-label small fw-bold text-dark mb-2">Pièce jointe / Preuve d'activité</label>
+                        <div class="file-upload-wrapper" onclick="document.getElementById('id_image').click();">
+                            <i class="bi bi-cloud-arrow-up text-primary fs-2 d-block mb-1"></i>
+                            <span class="fw-bold text-dark d-block small mb-1" id="fileNameDisplay">Cliquez pour joindre une photo ou document</span>
+                            <span class="text-muted text-xxs d-block">Formats acceptés : JPG, PNG (Max 5 Mo)</span>
+                        </div>
+                        <input type="file" name="image" id="id_image" class="d-none" accept="image/*" onchange="updateFileName(this)">
+                    </div>
+                </div>
+
+                <div class="modal-footer border-top p-3 px-4 bg-light">
+                    <button type="button" class="btn btn-light rounded-3 fw-bold text-muted" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary rounded-3 fw-bold px-4">
+                        <i class="bi bi-send-fill me-1"></i> Transmettre le rapport
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Affiche le nom du fichier sélectionné dans la zone de téléversement
+    function updateFileName(input) {
+        const display = document.getElementById('fileNameDisplay');
+        if (input.files && input.files[0]) {
+            display.textContent = "Fichier sélectionné : " + input.files[0].name;
+            display.classList.add('text-primary');
+        } else {
+            display.textContent = "Cliquez pour joindre une photo ou document";
+            display.classList.remove('text-primary');
+        }
+    }
+</script>
+{% endblock %}

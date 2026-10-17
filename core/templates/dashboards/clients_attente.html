@@ -1,0 +1,36 @@
+{% extends "dashboards/base_dashboard.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="fw-800 mb-4">Clients en attente de validation</h2>
+    
+    <div class="row">
+        {% for client in clients %}
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-light rounded-circle p-3 me-3">
+                        <i class="bi bi-person fs-3 text-primary"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">{{ client.username }}</h6>
+                        <small class="text-muted">{{ client.email }}</small>
+                    </div>
+                </div>
+                <div class="mb-3 small">
+                    <i class="bi bi-telephone me-2"></i> {{ client.phone|default:"Non renseigné" }}
+                </div>
+                <a href="{% url 'approuver_client' client.id %}" class="btn btn-primary w-100 rounded-3 fw-bold">
+                    Approuver le compte
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-5">
+            <i class="bi bi-check2-circle display-1 text-muted"></i>
+            <p class="mt-3 text-muted">Aucun nouveau client en attente.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

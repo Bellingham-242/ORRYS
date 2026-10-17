@@ -1,0 +1,522 @@
+{% extends 'dashboards/base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #0061ff;
+        --primary-soft: rgba(0, 97, 255, 0.08);
+        --slate-900: #0f172a;
+        --slate-800: #1e293b;
+        --slate-500: #64748b;
+        --slate-100: #f8fafc;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+    }
+
+    .dashboard-view { 
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .metric-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: 1.25rem 1.5rem;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .metric-card:hover {
+        border-color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px -6px rgba(0, 97, 255, 0.08);
+    }
+
+    .wallet-hero {
+        background: linear-gradient(135deg, var(--slate-900) 0%, #172554 100%);
+        border-radius: 20px;
+        padding: 2rem 2.25rem;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 16px 28px -6px rgba(15, 23, 42, 0.15);
+    }
+
+    .wallet-hero::after {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -10%;
+        width: 280px;
+        height: 280px;
+        background: radial-gradient(circle, rgba(0, 97, 255, 0.3) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .table-pro thead th {
+        background: var(--slate-100);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 800;
+        color: var(--slate-500);
+        letter-spacing: 0.05em;
+        padding: 1rem 1rem;
+        border: none;
+    }
+
+    .pill-status {
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .pill-in { background: #dcfce7; color: #15803d; }
+    .pill-out { background: #fee2e2; color: #b91c1c; }
+
+    .approval-item {
+        background: var(--slate-100);
+        border-radius: 14px;
+        padding: 1rem;
+        border: 1px solid #f1f5f9;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .approval-item:hover {
+        background: #ffffff;
+        border-color: var(--primary);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+    }
+
+    .extra-small { font-size: 0.70rem; letter-spacing: 0.03em; }
+    .fw-700 { font-weight: 700; }
+    .fw-800 { font-weight: 800; }
+    .fw-900 { font-weight: 900; }
+</style>
+
+<div class="dashboard-view container-fluid p-0">
+    
+    <!-- EN-TÊTE PRINCIPAL -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 extra-small fw-bold">
+                    <i class="bi bi-shield-check me-1"></i> Admin HQ
+                </span>
+                <span class="text-muted extra-small">• Vue globale du système</span>
+            </div>
+            <h2 class="fw-800 text-dark mb-0">Administration Système & Flux</h2>
+        </div>
+
+        <!-- ACTIONS RAPIDES ADMIN -->
+        <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-white border bg-white rounded-3 fw-bold shadow-sm px-3 text-dark" 
+                    data-bs-toggle="modal" data-bs-target="#modalAudit">
+                <i class="bi bi-file-earmark-bar-graph text-primary me-2"></i>Rapport Audit
+            </button>
+            <a href="{% url 'gestion_caisse' %}" class="btn btn-primary rounded-3 fw-bold shadow-sm px-3">
+                <i class="bi bi-plus-lg me-2"></i>Nouveau Flux Caisse
+            </a>
+        </div>
+    </div>
+
+    <!-- CARTE METRIQUES / METRIC GRID -->
+    <div class="row g-3 mb-4">
+        <!-- TRÉSORERIE -->
+        <div class="col-xl-5 col-lg-6">
+            <div class="wallet-hero d-flex align-items-center h-100">
+                <div class="flex-grow-1">
+                    <span class="text-primary-subtle fw-bold extra-small text-uppercase mb-1 d-block">Trésorerie Consolidée</span>
+                    <h1 class="display-6 fw-900 mb-0 text-white">
+                        {{ solde_total|default:"0" }} <small class="fs-5 opacity-75 fw-normal">FCFA</small>
+                    </h1>
+                </div>
+                <div class="bg-white bg-opacity-10 p-3 rounded-4 border border-white border-opacity-10">
+                    <i class="bi bi-bank2 fs-2 text-white"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- DEMANDES CLIENTS EN ATTENTE -->
+        <div class="col-xl-2 col-md-6 col-lg-3">
+            <div class="metric-card h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="bg-warning bg-opacity-10 text-warning p-2 rounded-3">
+                        <i class="bi bi-chat-left-dots-fill fs-4"></i>
+                    </div>
+                    <span class="fw-800 text-dark fs-3">{{ service_requests.count|default:"0" }}</span>
+                </div>
+                <div>
+                    <h6 class="text-muted extra-small fw-bold text-uppercase mb-1">Demandes Clients</h6>
+                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill extra-small">
+                        En attente
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACCÈS À VALIDER -->
+        <div class="col-xl-2 col-md-6 col-lg-3">
+            <div class="metric-card h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="{% if pending_clients > 0 %}bg-danger{% else %}bg-success{% endif %} bg-opacity-10 {% if pending_clients > 0 %}text-danger{% else %}text-success{% endif %} p-2 rounded-3">
+                        <i class="bi bi-person-plus-fill fs-4"></i>
+                    </div>
+                    <span class="fw-800 text-dark fs-3">{{ pending_clients|default:"0" }}</span>
+                </div>
+                <div>
+                    <h6 class="text-muted extra-small fw-bold text-uppercase mb-1">Comptes Clients</h6>
+                    {% if pending_clients > 0 %}
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill extra-small">
+                        Validation requise
+                    </span>
+                    {% else %}
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill extra-small">
+                        Tous validés
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- STAFF & COLLABORATEURS -->
+        <div class="col-xl-3 col-md-6 col-lg-12">
+            <div class="metric-card h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="bg-primary-soft text-primary p-2 rounded-3">
+                        <i class="bi bi-people-fill fs-4"></i>
+                    </div>
+                    <div class="text-end">
+                        <span class="d-block fw-800 text-dark fs-3">{{ total_employees|default:"0" }}</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex justify-content-between align-items-center extra-small text-muted mb-1">
+                        <span class="fw-bold text-uppercase">Quota Équipe</span>
+                        <span class="fw-bold text-dark">{{ total_employees }}/30</span>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: {% widthratio total_employees 30 100 %}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN SECTION (2 COLONNES) -->
+    <div class="row g-4">
+        
+        <!-- COLONNE GAUCHE (8) : DEMANDES CLIENTS + ACTIVITÉS DE CAISSE -->
+        <div class="col-lg-8">
+            <div class="vstack gap-4">
+
+                <!-- 1. GESTION DES DEMANDES ET PRESTATIONS CLIENTS -->
+                <div class="bg-white border rounded-4 shadow-sm overflow-hidden">
+                    <div class="p-4 border-bottom d-flex justify-content-between align-items-center bg-white">
+                        <div>
+                            <h5 class="fw-800 text-dark mb-0 d-flex align-items-center gap-2">
+                                <i class="bi bi-inbox-fill text-primary"></i> Demandes de Prestations Clients
+                            </h5>
+                            <small class="text-muted">Projets, besoins informatiques et requêtes d'assistance</small>
+                        </div>
+                        <span class="badge bg-primary rounded-pill px-3 py-2 extra-small fw-bold">
+                            {{ service_requests.count|default:"0" }} Reçue(s)
+                        </span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-pro table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Client</th>
+                                    <th>Service Demandé</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                    <th class="text-end pe-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in service_requests %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-sm bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:32px; height:32px; font-size:0.75rem;">
+                                                {{ req.client.username|slice:":2"|upper }}
+                                            </div>
+                                            <div>
+                                                <span class="fw-bold text-dark d-block small">{{ req.client.get_full_name|default:req.client.username }}</span>
+                                                <span class="text-muted extra-small d-block">{{ req.client.email }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-dark d-block small">{{ req.nature }}</span>
+                                        <span class="text-muted extra-small text-truncate d-inline-block" style="max-width: 180px;">{{ req.explanation }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="small text-muted fw-medium">{{ req.date_requested|date:"d M Y" }}</span>
+                                    </td>
+                                    <td>
+                                        {% if req.is_read %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill extra-small px-2 py-1">Traité</span>
+                                        {% else %}
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill extra-small px-2 py-1">En attente</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <button class="btn btn-sm btn-light border rounded-3 fw-bold px-2" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#modalRequestDetail{{ req.id }}" 
+                                                title="Consulter le détail">
+                                            <i class="bi bi-eye text-primary"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- MODALE DÉTAIL DEMANDE CLIENT -->
+                                <div class="modal fade" id="modalRequestDetail{{ req.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow-lg rounded-4">
+                                            <div class="modal-header bg-dark text-white p-4">
+                                                <h6 class="modal-title fw-bold">Demande de {{ req.client.username }}</h6>
+                                                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body p-4 text-start">
+                                                <div class="mb-3">
+                                                    <span class="text-muted extra-small text-uppercase fw-bold d-block">Type de Prestation</span>
+                                                    <strong class="text-dark fs-6">{{ req.nature }}</strong>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <span class="text-muted extra-small text-uppercase fw-bold d-block">Explication / Besoin</span>
+                                                    <div class="p-3 bg-light rounded-3 text-secondary small" style="white-space: pre-line;">
+                                                        {{ req.explanation }}
+                                                    </div>
+                                                </div>
+                                                <div class="extra-small text-muted">
+                                                    <i class="bi bi-clock me-1"></i> Soumis le {{ req.date_requested|date:"d M Y à H:i" }}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer bg-light border-0 p-3">
+                                                <button type="button" class="btn btn-secondary btn-sm rounded-3 fw-bold" data-bs-dismiss="modal">Fermer</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <i class="bi bi-inbox text-muted fs-3 opacity-25 d-block mb-1"></i>
+                                        <span class="text-muted small">Aucune demande de service en attente.</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2. ACTIVITÉS DE CAISSE RÉCENTES -->
+                <div class="bg-white border rounded-4 shadow-sm overflow-hidden">
+                    <div class="p-4 border-bottom d-flex justify-content-between align-items-center bg-white">
+                        <div>
+                            <h5 class="fw-800 text-dark mb-0 d-flex align-items-center gap-2">
+                                <i class="bi bi-cash-stack text-success"></i> Derniers Mouvements de Caisse
+                            </h5>
+                            <small class="text-muted">Journal financier récent de l’entreprise</small>
+                        </div>
+                        <a href="{% url 'gestion_caisse' %}" class="small text-primary fw-bold text-decoration-none">Journal complet →</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-pro table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Date & Heure</th>
+                                    <th>Motif / Libellé</th>
+                                    <th>Responsable</th>
+                                    <th class="text-end pe-4">Montant</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in transactions %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <span class="d-block fw-800 text-dark small">{{ t.date_creation|date:"H:i" }}</span>
+                                        <small class="text-muted fw-bold extra-small">{{ t.date_creation|date:"d M Y" }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-700 text-dark d-block small mb-1">{{ t.motif }}</span>
+                                        {% if t.type == 'ENTREE' %}
+                                            <span class="pill-status pill-in"><i class="bi bi-plus-circle-fill"></i> ENTRÉE</span>
+                                        {% else %}
+                                            <span class="pill-status pill-out"><i class="bi bi-dash-circle-fill"></i> SORTIE</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-light border rounded-circle d-flex align-items-center justify-content-center fw-bold text-primary me-2" style="width:28px; height:28px; font-size: 0.65rem;">
+                                                {{ t.auteur.username|slice:":2"|upper }}
+                                            </div>
+                                            <span class="small fw-bold text-dark">{{ t.auteur.username }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <span class="fw-900 fs-6 {% if t.type == 'ENTREE' %}text-success{% else %}text-danger{% endif %}">
+                                            {% if t.type == 'ENTREE' %}+{% else %}-{% endif %}{{ t.montant }} <small class="extra-small">FCFA</small>
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                        <i class="bi bi-wallet2 text-muted fs-3 opacity-25 d-block mb-1"></i>
+                                        <span class="text-muted small">Aucun mouvement financier enregistré.</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- COLONNE DROITE (4) : DEMANDES D'ACCÈS & SATELLITE -->
+        <div class="col-lg-4">
+            <div class="vstack gap-4">
+
+                <!-- ACCÈS & VALIDATION COMPTES CLIENTS -->
+                <div class="bg-white border rounded-4 shadow-sm p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="fw-800 text-dark mb-0">Demandes d'Accès</h5>
+                        <span class="badge bg-primary rounded-pill px-3 py-2 extra-small">{{ pending_clients|default:"0" }}</span>
+                    </div>
+
+                    <div class="vstack gap-3">
+                        {% for client in clients_pending_list %}
+                        <div class="approval-item">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar-sm bg-primary-subtle text-primary border rounded-circle fw-bold d-flex align-items-center justify-content-center" style="width:36px; height:36px;">
+                                        {{ client.username|slice:":1"|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-800 text-dark small">{{ client.get_full_name|default:client.username }}</div>
+                                        <div class="text-muted extra-small">
+                                            {% if client.date_joined %}
+                                                Inscrit le {{ client.date_joined|date:"d/m/Y à H:i" }}
+                                            {% else %}
+                                                Inscrit récemment
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-2">
+                                <!-- ACTION VALIDER -->
+                                <div class="col-8">
+                                    <form method="POST" action="{% url 'approve_user' client.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-primary btn-sm w-100 rounded-3 fw-bold">
+                                            <i class="bi bi-check-circle me-1"></i> Valider
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- ACTION REFUSER -->
+                                <div class="col-4">
+                                    <form method="POST" action="{% url 'reject_user' client.id %}" onsubmit="return confirm('Êtes-vous sûr de vouloir rejeter le compte de {{ client.username }} ?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger btn-sm w-100 rounded-3" title="Refuser">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4 border border-dashed rounded-4 bg-light">
+                            <i class="bi bi-shield-check text-success fs-2 d-block mb-1"></i>
+                            <span class="small fw-bold text-dark d-block">Sécurité Optimale</span>
+                            <small class="text-muted extra-small">Aucun compte client en attente de validation.</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- JAUGE LIMITE DE CLIENTS -->
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="extra-small fw-800 text-muted text-uppercase">Capacité Serveur / Clients</span>
+                            <span class="extra-small fw-900 text-dark">{{ total_clients|default:"0" }}/100</span>
+                        </div>
+                        <div class="progress" style="height: 5px;">
+                            <div class="progress-bar bg-dark" role="progressbar" style="width: {% widthratio total_clients 100 100 %}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RACCOURCIS DU SYSTÈME ADMIN -->
+                <div class="bg-white border rounded-4 shadow-sm p-4">
+                    <h6 class="fw-800 text-dark mb-3 extra-small text-uppercase">Modules d'Administration</h6>
+                    
+                    <div class="vstack gap-2">
+                        <a href="{% url 'gestion_caisse' %}" class="btn btn-light text-start w-100 rounded-3 p-2-5 d-flex align-items-center justify-content-between border">
+                            <span class="small fw-bold text-dark"><i class="bi bi-journal-text me-2 text-primary"></i>Journal de Caisse</span>
+                            <i class="bi bi-chevron-right extra-small text-muted"></i>
+                        </a>
+
+                        <a href="{% url 'archives' %}" class="btn btn-light text-start w-100 rounded-3 p-2-5 d-flex align-items-center justify-content-between border">
+                            <span class="small fw-bold text-dark"><i class="bi bi-chat-left-quote me-2 text-success"></i>Centre de Communication</span>
+                            <i class="bi bi-chevron-right extra-small text-muted"></i>
+                        </a>
+
+                        <a href="{% url 'user_management' %}" class="btn btn-light text-start w-100 rounded-3 p-2-5 d-flex align-items-center justify-content-between border">
+                            <span class="small fw-bold text-dark"><i class="bi bi-people me-2 text-warning"></i>Gestion des Rôles & Staff</span>
+                            <i class="bi bi-chevron-right extra-small text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODALE D'AUDIT SYSTEME -->
+<div class="modal fade" id="modalAudit" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-dark text-white p-4">
+                <h5 class="modal-title fw-800 mb-0"><i class="bi bi-shield-shaded me-2"></i>Rapport d'Audit Système</h5>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted small">Sélectionnez la période pour générer le récapitulatif comptable et opérationnel d'ORRYS Numérique.</p>
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-dark extra-small">Période de l'export</label>
+                    <select class="form-select rounded-3 shadow-none">
+                        <option value="30">30 derniers jours</option>
+                        <option value="90">Dernier trimestre</option>
+                        <option value="365">Année en cours</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-0 p-3">
+                <button type="button" class="btn btn-light rounded-3 fw-bold text-muted" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary rounded-3 fw-bold px-4" data-bs-dismiss="modal">Exporter CSV / PDF</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

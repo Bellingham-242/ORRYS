@@ -1,0 +1,259 @@
+{% extends 'dashboards/base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #0061ff;
+        --dark-slate: #0f172a;
+        --success: #10b981;
+        --danger: #ef4444;
+        --card-border: #e2e8f0;
+    }
+
+    .dashboard-wrapper {
+        animation: fadeInUp 0.6s ease-out;
+        padding: 1.5rem 0;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .glass-card {
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        height: 100%;
+    }
+
+    .card-title-pro {
+        font-weight: 800;
+        color: var(--dark-slate);
+        letter-spacing: -0.5px;
+    }
+
+    .label-pro {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control-pro {
+        background: #f8fafc !important;
+        border: 1.5px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        padding: 0.75rem 1rem !important;
+        font-weight: 500;
+        transition: 0.2s;
+    }
+
+    .form-control-pro:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 4px rgba(0, 97, 255, 0.1) !important;
+        background: #fff !important;
+    }
+
+    /* Badge de Sécurité */
+    .security-badge-zone {
+        background: #f1f5f9;
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 2px dashed #cbd5e1;
+    }
+
+    .security-code-display {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--dark-slate);
+        letter-spacing: 6px;
+        text-align: center;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .btn-action-pro {
+        background: var(--dark-slate);
+        color: white;
+        border-radius: 12px;
+        padding: 1rem;
+        font-weight: 700;
+        width: 100%;
+        transition: 0.3s;
+        border: none;
+    }
+
+    .btn-action-pro:hover {
+        background: #000;
+        transform: translateY(-2px);
+    }
+
+    /* Style du Tableau */
+    .table-pro thead th {
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        font-weight: 800;
+        padding: 1.2rem 1rem;
+    }
+
+    .pill-status {
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.65rem;
+        font-weight: 800;
+    }
+
+    .pill-in { background: #dcfce7; color: #15803d; }
+    .pill-out { background: #fee2e2; color: #b91c1c; }
+
+    .action-icon {
+        width: 32px; height: 32px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 8px;
+        transition: 0.2s;
+    }
+</style>
+
+<div class="dashboard-wrapper container-fluid">
+    <div class="row g-4">
+        
+        <div class="col-xl-4 col-lg-5">
+            <div class="glass-card">
+                <div class="mb-4">
+                    <h3 class="card-title-pro mb-1">Mouvement de Caisse</h3>
+                    <p class="text-muted small">Seul l'Admin et le Gestionnaire peuvent opérer ici.</p>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="label-pro">Opération</label>
+                            <select name="type" class="form-select form-control-pro shadow-none">
+                                <option value="ENTREE">↗ Entrée</option>
+                                <option value="SORTIE">↘ Sortie</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="label-pro">Montant (FCFA)</label>
+                            <input type="number" name="montant" class="form-control form-control-pro" placeholder="Ex: 50000" required>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="label-pro">Motif du flux</label>
+                        <input type="text" name="motif" class="form-control form-control-pro" placeholder="Ex: Paiement service Web" required>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="label-pro">Détails de l'explication</label>
+                        <textarea name="description" class="form-control form-control-pro" rows="3" placeholder="Donnez plus de détails ici..."></textarea>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="label-pro">Justificatif (Image facultative)</label>
+                        <input type="file" name="image" class="form-control form-control-pro">
+                    </div>
+
+                    <div class="security-badge-zone mt-4 mb-4">
+                        <span class="label-pro text-center">Code de sécurité requis</span>
+                        <div class="security-code-display">{{ security_code }}</div>
+                        <input type="text" name="mot_validation" class="form-control text-center fw-bold border-2" placeholder="Recopiez le code ici" required>
+                    </div>
+
+                    <button type="submit" class="btn-action-pro">
+                        Valider l'enregistrement
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-xl-8 col-lg-7">
+            <div class="glass-card">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <div>
+                        <h4 class="card-title-pro mb-0">Historique des Flux</h4>
+                        <p class="text-muted small mb-0">Affichage des 15 dernières transactions</p>
+                    </div>
+                    <span class="badge bg-primary rounded-pill px-3 py-2 fw-bold">Live Feed</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-pro align-middle">
+                        <thead>
+                            <tr>
+                                <th>Date & Auteur</th>
+                                <th>Motif</th>
+                                <th>Type</th>
+                                <th class="text-end">Montant</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in transactions %}
+                            <tr class="border-bottom">
+                                <td class="py-3">
+                                    <span class="d-block fw-800 text-dark small">{{ t.date_creation|date:"H:i" }}</span>
+                                    <small class="text-muted fw-bold">{{ t.auteur.username }}</small>
+                                </td>
+                                <td>
+                                    <div class="fw-700 text-dark small">{{ t.motif }}</div>
+                                   {% if t.image %}
+                                        <a href="{% url 'voir_preuve_caisse' t.id %}" class="text-primary text-decoration-none fw-bold small">
+                                            <i class="bi bi-image"></i> Voir preuve
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if t.type == 'ENTREE' %}
+                                    <span class="pill-status pill-in">ENTRÉE</span>
+                                    {% else %}
+                                    <span class="pill-status pill-out">SORTIE</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end fw-900 fs-6 {% if t.type == 'ENTREE' %}text-success{% else %}text-danger{% endif %}">
+                                    {% if t.type == 'ENTREE' %}+{% else %}-{% endif %}{{ t.montant }}
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a href="{% url 'modifier_transaction' t.id %}" class="action-icon bg-light text-dark" title="Modifier">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        {% if user.role == 'ADMIN' %}
+                                        <a href="{% url 'confirmer_suppression_transaction' t.id %}" class="action-icon bg-danger-subtle text-danger" title="Supprimer">
+                                            <i class="bi bi-trash3-fill"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-wallet2 fs-1 opacity-25"></i>
+                                    <p class="mt-2 fw-bold">Aucune transaction enregistrée</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

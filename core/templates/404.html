@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Oups ! - ORRYS Numerique{% endblock %}
+
+{% block content %}
+    <div class="container-fluid py-5 mb-5 page-header" 
+     style="background: linear-gradient(rgba(15, 23, 43, 0.7), rgba(15, 23, 43, 0.7)), url('{% static 'img/carousel-1.jpg' %}') center center no-repeat; background-size: cover; border-radius: 0;">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 text-center">
+                <h1 class="display-3 text-white animated slideInDown">Erreur de Système</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-center">
+                        <li class="breadcrumb-item"><a class="text-white" href="{% url 'index' %}">Accueil</a></li>
+                        <li class="breadcrumb-item text-white active" aria-current="page">Erreur 404</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="position-relative d-inline-block">
+                        <i class="fa fa-bug display-1 text-primary mb-4"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            Bug détecté
+                        </span>
+                    </div>
+                    <h1 class="display-1 fw-bold">404</h1>
+                    <h2 class="mb-4">Perdu dans le Cloud ?</h2>
+                    <p class="mb-4 fs-5 text-muted">
+                        Même les meilleures infrastructures ont leurs zones d'ombre. La page que vous cherchez a probablement été déplacée, supprimée, ou elle n'a jamais appris à coder.
+                    </p>
+                    
+                    <div class="bg-light p-4 rounded mb-5">
+                        <h6 class="text-start mb-3"><i class="fa fa-terminal me-2 text-primary"></i>Diagnostic rapide :</h6>
+                        <ul class="text-start mb-0">
+                            <li>Lien obsolète ou mal orthographié.</li>
+                            <li>Migration de serveur en cours.</li>
+                            <li>Un développeur a abusé du café.</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3">
+                        <a class="btn btn-primary rounded-pill py-3 px-5" href="{% url 'index' %}">
+                            <i class="fa fa-home me-2"></i>Retour à la base
+                        </a>
+                        <a class="btn btn-outline-primary rounded-pill py-3 px-5" href="{% url 'contact' %}">
+                            Signaler le bug
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

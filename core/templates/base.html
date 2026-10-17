@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fr"> 
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}ORRYS Numerique | Expertise IT & Formation{% endblock %}</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Informatique, Formation, Développement, Maintenance, ORRYS Numerique" name="keywords">
+    <meta content="ORRYS Numerique : Votre partenaire de confiance pour les services informatiques, la formation technologique et l'accompagnement digital." name="description">
+
+    <!-- Configuration PWA (iOS, Android, Windows, macOS) -->
+    <meta name="theme-color" content="#00B7F1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ORRYS App">
+    <link rel="apple-touch-icon" href="{% static 'img/icon-192.png' %}">
+    
+    <!-- Lien Manifest officiel -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+
+    <link href="{% static 'img/favicon.ico' %}" rel="icon">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #00B7F1;    
+            --secondary: #B01E44;  
+            --dark: #0F172B;
+            --light: #F8FAFC; 
+            --border-color: #E2E8F0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--light);
+            color: #334155;
+        }
+
+        /* --- NAVBAR MODERNISÉE --- */
+        .custom-navbar {
+            background-color: #ffffff !important; 
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(15, 23, 43, 0.04);
+            height: 85px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand img {
+            height: 48px !important;
+            width: auto !important;
+            max-width: 180px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-brand img:hover {
+            transform: scale(1.03);
+        }
+
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        /* Liens de Navigation */
+        .navbar-nav .nav-link {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.92rem;
+            color: #475569 !important;
+            padding: 0.5rem 1.2rem !important;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .navbar-nav .nav-link:hover, 
+        .navbar-nav .nav-link.active {
+            color: var(--primary) !important;
+            background-color: rgba(0, 183, 241, 0.08);
+        }
+
+        /* Dropdown Stylisé */
+        .dropdown-menu {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 0.5rem;
+        }
+
+        .dropdown-item {
+            font-weight: 600;
+            font-size: 0.88rem;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            color: #475569;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(0, 183, 241, 0.08);
+            color: var(--primary);
+        }
+
+        /* Boutons d'Action Navbar */
+        .btn-pwa-download {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 0.65rem 1.25rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+
+        .btn-pwa-download:hover {
+            background-color: var(--dark);
+            color: #ffffff;
+            border-color: var(--dark);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn-start {
+            background-color: var(--primary);
+            color: #ffffff !important;
+            font-weight: 700;
+            font-size: 0.88rem;
+            padding: 0.65rem 1.5rem;
+            border-radius: 10px;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 183, 241, 0.25);
+            transition: all 0.25s ease;
+        }
+
+        .nav-btn-start:hover {
+            background-color: var(--secondary);
+            color: #ffffff !important;
+            box-shadow: 0 6px 16px rgba(176, 30, 68, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* Modales PWA Stylisées */
+        .pwa-modal-header {
+            background: linear-gradient(135deg, var(--dark) 0%, #172554 100%);
+            color: white;
+            border-radius: 16px 16px 0 0;
+        }
+
+        @media (max-width: 991.98px) {
+            .custom-navbar {
+                height: auto;
+                padding: 1rem 0;
+            }
+            .navbar-collapse {
+                padding-top: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Spinner de chargement -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Chargement...</span>
+        </div>
+    </div>
+
+    <!-- NAVBAR MODERNE -->
+    <nav class="navbar navbar-expand-lg sticky-top custom-navbar">
+        <div class="container-fluid px-4 px-lg-5">
+            <a href="{% url 'index' %}" class="navbar-brand d-flex align-items-center gap-2">
+                <img src="{% static 'img/image.png' %}" alt="Logo ORRYS" class="logo-img">
+                <h4 class="m-0 brand-title">ORRYS Numerique</h4>
+            </a>
+
+            <button type="button" class="navbar-toggler border-0" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto gap-1 py-3 py-lg-0">
+                    <a href="{% url 'index' %}" class="nav-item nav-link active">Accueil</a>
+                    <a href="{% url 'about' %}" class="nav-item nav-link">Agence</a>
+                    <a href="{% url 'services' %}" class="nav-item nav-link">Expertise</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Actus</a>
+                        <div class="dropdown-menu m-0">
+                            <a href="{% url 'team' %}" class="dropdown-item">Équipe</a>
+                            <a href="{% url 'testimonials' %}" class="dropdown-item">Blog</a>
+                        </div>
+                    </div>
+                    <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 ms-lg-3 mt-3 mt-lg-0">
+                    <!-- Bouton Installer l'App -->
+                    <button type="button" id="btnInstallPWA" class="btn-pwa-download" title="Installer l'application sur votre appareil">
+                        <i class="bi bi-download text-primary"></i>
+                        <span>Installer l'App</span>
+                    </button>
+
+                    <!-- Bouton Démarrer -->
+                    <a href="{% url 'login' %}" class="nav-btn-start text-decoration-none">
+                        <span>Démarrer</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+
+    <!-- FOOTER DYNAMIQUE (ADMIN) -->
+    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">ORRYS Numerique</h4>
+                    <p>{{ config.footer_about|default:"Votre partenaire vers l'excellence digitale. Services IT sur mesure et formations certifiantes." }}</p>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Contact</h4>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>{{ config.company_address|default:"Pointe-Noire, Congo" }}</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>{{ config.company_phone|default:"+242 XX XXX XX XX" }}</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>{{ config.company_email|default:"contact@orrys-numerique.com" }}</p>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Nos Pôles</h4>
+                    <a class="btn btn-link text-white-50 text-decoration-none" href="">Maintenance IT</a>
+                    <a class="btn btn-link text-white-50 text-decoration-none" href="">Développement Web</a>
+                    <a class="btn btn-link text-white-50 text-decoration-none" href="">Formations</a>
+                    <a class="btn btn-link text-white-50 text-decoration-none" href="">Conseil Digital</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Application Mobile</h4>
+                    <p class="small text-white-50 mb-3">Accédez à nos services directement depuis votre écran d'accueil sans passer par le navigateur.</p>
+                    <button type="button" class="btn btn-outline-light w-100 rounded-3 py-2 fw-bold btn-pwa-footer">
+                        <i class="bi bi-phone me-2"></i> Installer l'application
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="container border-top border-secondary py-4">
+            <div class="copyright text-center">
+                <p class="mb-0">{{ config.footer_copyright|default:'&copy; 2026 <strong>ORRYS Numerique</strong>. Tous droits réservés.'|safe }}</p>
+            </div>
+        </div>
+    </div>
+
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top rounded-circle"><i class="bi bi-arrow-up"></i></a>
+
+    <!-- Modale d'instructions pour iOS (Safari) -->
+    <div class="modal fade" id="modalIOSInstall" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header pwa-modal-header p-4 d-flex align-items-center">
+                    <img src="{% static 'img/image.png' %}" alt="Icone ORRYS" class="rounded-3 me-3" style="width: 40px; height: 40px; object-fit: contain; background: white; padding: 4px;">
+                    <h5 class="modal-title fw-bold text-white mb-0">Installer sur iPhone / iPad</h5>
+                    <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-dark">
+                    <p class="small text-muted mb-3">Pour ajouter l'application à votre écran d'accueil :</p>
+                    <ol class="small vstack gap-2 ps-3 mb-0">
+                        <li>Appuyez sur le bouton <strong>Partager</strong> <i class="bi bi-share text-primary"></i> dans Safari.</li>
+                        <li>Faites défiler vers le bas et sélectionnez <strong>Sur l'écran d'accueil</strong> <i class="bi bi-plus-square text-primary"></i>.</li>
+                        <li>Validez en appuyant sur <strong>Ajouter</strong>.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale d'aide pour l'installation sur PC (Edge / Chrome) -->
+    <div class="modal fade" id="modalDesktopInstall" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header pwa-modal-header p-4 d-flex align-items-center">
+                    <img src="{% static 'img/image.png' %}" alt="Icone ORRYS" class="rounded-3 me-3" style="width: 40px; height: 40px; object-fit: contain; background: white; padding: 4px;">
+                    <h5 class="modal-title fw-bold text-white mb-0">Installer ORRYS Numérique</h5>
+                    <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-dark">
+                    <p class="small text-muted mb-3">Pour installer l'application sur votre ordinateur :</p>
+                    <ol class="small vstack gap-3 ps-3 mb-4">
+                        <li>
+                            Look à droite de la barre d'adresse (URL) : cliquez sur l'icône d'installation 
+                            <i class="bi bi-display text-primary fs-5 align-middle ms-1"></i> (un petit écran avec une flèche ou un signe <strong>+</strong>).
+                        </li>
+                        <li>
+                            Ou cliquez sur les <strong>trois petits points (...)</strong> en haut à droite de votre navigateur, puis choisissez 
+                            <strong>Applications</strong> &gt; <strong>Installer ce site en tant qu'application</strong>.
+                        </li>
+                    </ol>
+                    <div class="alert alert-info py-2 small mb-0 rounded-3">
+                        <i class="bi bi-info-circle me-1"></i> Une fois déployé sur votre serveur sécurisé (HTTPS), l'installation se lancera automatiquement en 1 clic !
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+
+    <!-- Enregistrement du Service Worker & Gestion PWA -->
+    <script>
+        // 1. Enregistrement du Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register("{% static 'sw.js' %}")
+                    .then(reg => console.log('PWA Service Worker actif !'))
+                    .catch(err => console.error('Erreur Service Worker :', err));
+            });
+        }
+
+        // 2. Gestion intelligente du clic "Installer l'App"
+        let deferredPrompt = null;
+        const btnInstallHeader = document.getElementById('btnInstallPWA');
+        const btnInstallFooter = document.querySelector('.btn-pwa-footer');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        function handlePWAInstall() {
+            // Détection iOS (iPhone/iPad)
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+            if (isIOS) {
+                const modalIOS = new bootstrap.Modal(document.getElementById('modalIOSInstall'));
+                modalIOS.show();
+                return;
+            }
+
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('App installée !');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // Modale d'aide élégante au lieu de l'alert() moche
+                const modalDesktop = new bootstrap.Modal(document.getElementById('modalDesktopInstall'));
+                modalDesktop.show();
+            }
+        }
+
+        if (btnInstallHeader) btnInstallHeader.addEventListener('click', handlePWAInstall);
+        if (btnInstallFooter) btnInstallFooter.addEventListener('click', handlePWAInstall);
+    </script>
+</body>
+</html>

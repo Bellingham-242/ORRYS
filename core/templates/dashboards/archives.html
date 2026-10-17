@@ -1,0 +1,347 @@
+{% extends 'dashboards/base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid p-0 animate__animated animate__fadeIn">
+    
+    <!-- EN-TÊTE PRINCIPAL & STATISTIQUES -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-800 text-dark mb-1 d-flex align-items-center gap-2">
+                <i class="bi bi-chat-left-quote-fill text-primary"></i> Centre de Communication
+            </h2>
+            <p class="text-muted small mb-0">Gestion centralisée des rapports d'activité employés et des publications du site</p>
+        </div>
+
+        <div class="d-flex gap-3 w-100 w-md-auto">
+            <div class="stat-card bg-white p-3 rounded-4 shadow-sm border border-light d-flex align-items-center gap-3 flex-grow-1 flex-md-grow-0">
+                <div class="icon-box bg-primary-subtle text-primary rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                    <i class="bi bi-file-earmark-text-fill fs-5"></i>
+                </div>
+                <div>
+                    <span class="d-block fw-800 text-dark fs-5 lh-1">{{ total_rapports }}</span>
+                    <span class="text-muted extra-small fw-bold text-uppercase">Rapports</span>
+                </div>
+            </div>
+
+            <div class="stat-card bg-white p-3 rounded-4 shadow-sm border border-light d-flex align-items-center gap-3 flex-grow-1 flex-md-grow-0">
+                <div class="icon-box bg-success-subtle text-success rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                    <i class="bi bi-megaphone-fill fs-5"></i>
+                </div>
+                <div>
+                    <span class="d-block fw-800 text-dark fs-5 lh-1">{{ total_pubs }}</span>
+                    <span class="text-muted extra-small fw-bold text-uppercase">Publications</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BARRE DE RECHERCHE & FILTRES -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-3">
+            <form method="GET" class="row g-2 align-items-center">
+                <input type="hidden" name="tab" value="{{ active_tab }}">
+                
+                <div class="col-12 col-md-8 col-lg-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0 ps-3 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" name="search" class="form-control bg-light border-0 ps-2 shadow-none text-dark" 
+                               placeholder="Rechercher par titre, mot-clé, auteur..." value="{{ search_query }}">
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-2 col-lg-2">
+                    <button type="submit" class="btn btn-primary w-100 rounded-3 fw-bold btn-hover">
+                        <i class="bi bi-funnel me-1"></i> Filtrer
+                    </button>
+                </div>
+
+                {% if search_query %}
+                <div class="col-6 col-md-2 col-lg-1">
+                    <a href="?tab={{ active_tab }}" class="btn btn-light w-100 rounded-3 text-muted border fw-medium" title="Réinitialiser">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- NAVEGATION PAR ONGLETS -->
+    <ul class="nav nav-pills custom-pills mb-4 p-1 bg-white rounded-pill shadow-sm border d-inline-flex" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if active_tab == 'rapports' %}active{% endif %} rounded-pill px-4 fw-bold" 
+                    id="pills-rapports-tab" data-bs-toggle="pill" data-bs-target="#pills-rapports" type="button" role="tab">
+                <i class="bi bi-file-earmark-text me-2"></i> Rapports Employés ({{ total_rapports }})
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if active_tab == 'pubs' %}active{% endif %} rounded-pill px-4 fw-bold" 
+                    id="pills-pubs-tab" data-bs-toggle="pill" data-bs-target="#pills-pubs" type="button" role="tab">
+                <i class="bi bi-megaphone me-2"></i> Publications Site ({{ total_pubs }})
+            </button>
+        </li>
+    </ul>
+
+    <!-- CONTENU DES ONGLETS -->
+    <div class="tab-content" id="pills-tabContent">
+        
+        <!-- ONGLET 1 : RAPPORTS EMPLOYÉS -->
+        <div class="tab-pane fade {% if active_tab == 'rapports' %}show active{% endif %}" id="pills-rapports" role="tabpanel">
+            <div class="row g-4">
+                {% for r in rapports %}
+                <div class="col-xl-4 col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden card-hover transition-all">
+                        
+                        <!-- SECTION IMAGE DU RAPPORT (Si présente) -->
+                        {% if r.fichier_joint or r.image %}
+                        <div class="position-relative overflow-hidden bg-light" style="height: 160px;">
+                            <img src="{% if r.fichier_joint %}{{ r.fichier_joint.url }}{% else %}{{ r.image.url }}{% endif %}" 
+                                 class="w-100 h-100 object-fit-cover card-img-top img-zoom" 
+                                 alt="{{ r.title }}">
+                            <span class="badge bg-dark bg-opacity-75 position-absolute bottom-0 end-0 m-2 rounded-pill px-2 py-1 extra-small">
+                                <i class="bi bi-image me-1"></i> Pièce jointe
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge bg-light text-secondary rounded-pill small border px-3 py-2 fw-normal">
+                                    <i class="bi bi-calendar3 me-1"></i>{{ r.date_submission|date:"d M Y" }}
+                                </span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width:32px; height:32px; font-size:0.75rem;">
+                                        {{ r.employee.username|slice:":2"|upper }}
+                                    </div>
+                                    <span class="small fw-bold text-dark">{{ r.employee.get_full_name|default:r.employee.username }}</span>
+                                </div>
+                            </div>
+
+                            <h5 class="fw-800 text-dark mb-2 line-clamp-1">{{ r.title }}</h5>
+                            <p class="text-muted small mb-4 flex-grow-1 line-clamp-3">{{ r.content }}</p>
+
+                            <!-- BOUTON SOMBRE SOUHAITÉ -->
+                            <button type="button" 
+                                    class="btn btn-dark btn-sm rounded-3 w-100 fw-bold py-2" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#viewReport{{ r.id }}">
+                                Lire le rapport
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODALE DE LECTURE DU RAPPORT -->
+                <div class="modal fade" id="viewReport{{ r.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                            <div class="modal-header bg-light border-0 p-4">
+                                <div>
+                                    <span class="badge bg-primary rounded-pill mb-2">Rapport d'activité</span>
+                                    <h5 class="modal-title fw-800 text-dark mb-0">{{ r.title }}</h5>
+                                </div>
+                                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                                <div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:36px; height:36px;">
+                                            {{ r.employee.username|slice:":2"|upper }}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold text-dark">{{ r.employee.get_full_name|default:r.employee.username }}</h6>
+                                            <small class="text-muted">{{ r.employee.email }}</small>
+                                        </div>
+                                    </div>
+                                    <span class="text-muted small"><i class="bi bi-clock me-1"></i>Soumis le {{ r.date_submission|date:"d F Y à H:i" }}</span>
+                                </div>
+
+                                <!-- IMAGE COMPLÈTE DANS LA MODALE -->
+                                {% if r.fichier_joint or r.image %}
+                                <div class="mb-4 text-center bg-light p-2 rounded-3 border">
+                                    <img src="{% if r.fichier_joint %}{{ r.fichier_joint.url }}{% else %}{{ r.image.url }}{% endif %}" 
+                                         class="img-fluid rounded-3 shadow-sm max-h-400" 
+                                         alt="{{ r.title }}">
+                                </div>
+                                {% endif %}
+
+                                <div class="report-text text-secondary mb-4" style="white-space: pre-line; line-height: 1.7;">
+                                    {{ r.content }}
+                                </div>
+
+                                {% if r.fichier_joint %}
+                                <div class="p-3 bg-light rounded-3 d-flex align-items-center justify-content-between border">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-paperclip fs-5 text-primary"></i>
+                                        <span class="small fw-bold text-dark">Document / Image attaché</span>
+                                    </div>
+                                    <a href="{{ r.fichier_joint.url }}" target="_blank" class="btn btn-sm btn-primary rounded-3 fw-bold">
+                                        <i class="bi bi-download me-1"></i> Télécharger le fichier
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="modal-footer bg-light border-0 p-3 d-flex justify-content-between">
+                                <a href="{% url 'delete_report' r.id %}" class="btn btn-outline-danger btn-sm rounded-3 fw-bold" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce rapport ?');">
+                                    <i class="bi bi-trash3 me-1"></i> Supprimer
+                                </a>
+                                <button type="button" class="btn btn-secondary btn-sm rounded-3 px-4 fw-bold" data-bs-dismiss="modal">Fermer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 py-5 text-center">
+                    <div class="p-5 bg-white rounded-4 border border-dashed shadow-sm max-w-md mx-auto">
+                        <i class="bi bi-inbox text-muted fs-1 mb-3 d-block"></i>
+                        <h6 class="fw-bold text-dark mb-1">Aucun rapport disponible</h6>
+                        <p class="text-muted small mb-0">{% if search_query %}Aucun résultat ne correspond à votre recherche "{{ search_query }}".{% else %}Aucun rapport n'a encore été soumis.{% endif %}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- PAGINATION RAPPORTS -->
+            {% if rapports.has_other_pages %}
+            <nav class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if rapports.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link border-0 shadow-sm rounded-3 mx-1 text-dark" href="?tab=rapports&page_r={{ rapports.previous_page_number }}&search={{ search_query }}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="page-item active">
+                        <span class="page-link border-0 shadow-sm rounded-3 mx-1 bg-dark text-white fw-bold">{{ rapports.number }}</span>
+                    </li>
+                    {% if rapports.has_next %}
+                    <li class="page-item">
+                        <a class="page-link border-0 shadow-sm rounded-3 mx-1 text-dark" href="?tab=rapports&page_r={{ rapports.next_page_number }}&search={{ search_query }}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+
+        <!-- ONGLET 2 : PUBLICATIONS SITE -->
+        <div class="tab-pane fade {% if active_tab == 'pubs' %}show active{% endif %}" id="pills-pubs" role="tabpanel">
+            <div class="row g-4">
+                {% for p in publications %}
+                <div class="col-xl-4 col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden card-hover transition-all">
+                        <div class="position-relative overflow-hidden bg-light" style="height: 180px;">
+                            {% if p.image %}
+                            <img src="{{ p.image.url }}" class="w-100 h-100 object-fit-cover card-img-top img-zoom" alt="{{ p.title }}">
+                            {% else %}
+                            <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                                <i class="bi bi-image fs-1 opacity-50"></i>
+                            </div>
+                            {% endif %}
+                            <span class="badge {% if p.status == 'PUBLIC' %}bg-success{% else %}bg-warning text-dark{% endif %} position-absolute top-0 end-0 m-3 rounded-pill shadow-sm px-3 py-2 fw-bold">
+                                {{ p.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="card-body p-4 d-flex flex-column">
+                            <span class="text-muted extra-small mb-1"><i class="bi bi-clock me-1"></i>{{ p.date_creation|date:"d M Y" }}</span>
+                            <h5 class="fw-800 text-dark mb-2 line-clamp-1">{{ p.title }}</h5>
+                            <p class="text-muted small mb-4 flex-grow-1 line-clamp-2">{{ p.content }}</p>
+
+                            <div class="d-flex gap-2 pt-2 border-top">
+                                <a href="#" class="btn btn-light btn-sm rounded-3 flex-grow-1 fw-bold text-dark border">
+                                    <i class="bi bi-pencil me-1"></i> Modifier
+                                </a>
+                                <a href="#" class="btn btn-outline-danger btn-sm rounded-3 px-3" title="Supprimer">
+                                    <i class="bi bi-trash3"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 py-5 text-center">
+                    <div class="p-5 bg-white rounded-4 border border-dashed shadow-sm max-w-md mx-auto">
+                        <i class="bi bi-megaphone text-muted fs-1 mb-3 d-block"></i>
+                        <h6 class="fw-bold text-dark mb-1">Aucune publication</h6>
+                        <p class="text-muted small mb-0">{% if search_query %}Aucun résultat ne correspond à votre recherche "{{ search_query }}".{% else %}Aucune publication n'a encore été créée.{% endif %}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- PAGINATION PUBLICATIONS -->
+            {% if publications.has_other_pages %}
+            <nav class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if publications.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link border-0 shadow-sm rounded-3 mx-1 text-dark" href="?tab=pubs&page_p={{ publications.previous_page_number }}&search={{ search_query }}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="page-item active">
+                        <span class="page-link border-0 shadow-sm rounded-3 mx-1 bg-dark text-white fw-bold">{{ publications.number }}</span>
+                    </li>
+                    {% if publications.has_next %}
+                    <li class="page-item">
+                        <a class="page-link border-0 shadow-sm rounded-3 mx-1 text-dark" href="?tab=pubs&page_p={{ publications.next_page_number }}&search={{ search_query }}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .custom-pills .nav-link { 
+        color: #64748b; 
+        background: transparent; 
+        border: none;
+        transition: all 0.2s ease-in-out;
+    }
+    .custom-pills .nav-link.active { 
+        background: #0f172a !important; 
+        color: white !important; 
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+    }
+    .card-hover:hover { 
+        transform: translateY(-4px); 
+        box-shadow: 0 12px 24px rgba(0,0,0,0.08) !important;
+    }
+    .card-hover:hover .img-zoom {
+        transform: scale(1.05);
+    }
+    .img-zoom {
+        transition: transform 0.35s ease;
+    }
+    .transition-all { transition: all 0.25s ease; }
+    .extra-small { font-size: 0.70rem; letter-spacing: 0.05em; }
+    .fw-800 { font-weight: 800; }
+    .max-h-400 { max-height: 400px; object-fit: contain; }
+    
+    .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    
+    .border-dashed { border-style: dashed !important; }
+    .max-w-md { max-width: 450px; }
+</style>
+
+<script>
+    document.querySelectorAll('button[data-bs-toggle="pill"]').forEach(button => {
+        button.addEventListener('shown.bs.tab', function (event) {
+            const tabName = event.target.id.replace('pills-', '').replace('-tab', '');
+            document.querySelectorAll('input[name="tab"]').forEach(input => input.value = tabName);
+        });
+    });
+</script>
+{% endblock %}

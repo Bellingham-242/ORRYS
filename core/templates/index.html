@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ORRYS Numerique | Expertise & Innovation IT{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0 mb-5">
+    <div class="owl-carousel header-carousel position-relative">
+        <div class="owl-carousel-item position-relative">
+            <img class="img-fluid" src="{% static 'img/carousel-1.jpg' %}" alt="Expertise IT">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(24, 29, 56, .7);">
+                <div class="container">
+                    <div class="row justify-content-start">
+                        <div class="col-sm-10 col-lg-8">
+                            <h5 class="text-primary text-uppercase mb-3 animated slideInDown">Solutions Informatiques sur Mesure</h5>
+                            <h1 class="display-3 text-white animated slideInDown">Propulsez votre Infrastructure vers le Futur</h1>
+                            <p class="fs-5 text-white mb-4 pb-2">Maintenance système, réseaux sécurisés et déploiement de solutions web. ORRYS Numerique transforme vos défis techniques en opportunités de croissance.</p>
+                            <a href="{% url 'services' %}" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Nos Services</a>
+                            <a href="{% url 'contact' %}" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Devis Gratuit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="owl-carousel-item position-relative">
+            <img class="img-fluid" src="{% static 'img/carousel-2.jpg' %}" alt="Formation Numérique">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(24, 29, 56, .7);">
+                <div class="container">
+                    <div class="row justify-content-start">
+                        <div class="col-sm-10 col-lg-8">
+                            <h5 class="text-primary text-uppercase mb-3 animated slideInDown">Centre de Formation Certifié</h5>
+                            <h1 class="display-3 text-white animated slideInDown">Maîtrisez les Outils de Demain</h1>
+                            <p class="fs-5 text-white mb-4 pb-2">Devenez expert en développement web, bureautique ou cybersécurité. Un accompagnement personnalisé pour booster votre carrière.</p>
+                            <a href="{% url 'services' %}" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Voir les Catalogues</a>
+                            <a href="{% url 'contact' %}" class="btn btn-light py-md-3 px-md-5 animated slideInRight">S'inscrire</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="service-item text-center pt-3">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-microchip text-primary mb-4"></i>
+                        <h5 class="mb-3">Maintenance & Réseaux</h5>
+                        <p>Audit, installation et gestion de parcs informatiques haute performance.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="service-item text-center pt-3">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-code text-primary mb-4"></i>
+                        <h5 class="mb-3">Développement Web</h5>
+                        <p>Création d'applications Django robustes et de sites web vitrines modernes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="service-item text-center pt-3">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-user-graduate text-primary mb-4"></i>
+                        <h5 class="mb-3">Coaching IT</h5>
+                        <p>Mentorat technique pour les professionnels et les étudiants en technologie.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
+                <div class="service-item text-center pt-3">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-shield-alt text-primary mb-4"></i>
+                        <h5 class="mb-3">Sécurité Digitale</h5>
+                        <p>Protection de vos données et mise en conformité de vos systèmes critiques.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s" style="min-height: 400px;">
+                <div class="position-relative h-100">
+                    <img class="img-fluid position-absolute w-100 h-100" src="{% static 'img/about.jpg' %}" alt="À propos de nous" style="object-fit: cover;">
+                </div>
+            </div>
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                <h6 class="section-title bg-white text-start text-primary pe-3">Pourquoi nous choisir ?</h6>
+                <h1 class="mb-4">L'Excellence au service de votre Transformation Numérique</h1>
+                <p class="mb-4">ORRYS Numerique n'est pas seulement un prestataire informatique. Nous sommes votre partenaire stratégique. Nous combinons expertise technique de pointe et pédagogie pour vous offrir des solutions durables.</p>
+                <div class="row gy-2 gx-4 mb-4">
+                    <div class="col-sm-6">
+                        <p class="mb-0"><i class="fa fa-check text-primary me-2"></i>Experts certifiés Python/Django</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="mb-0"><i class="fa fa-check text-primary me-2"></i>Support technique 24/7</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="mb-0"><i class="fa fa-check text-primary me-2"></i>Formations pratiques en présentiel</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="mb-0"><i class="fa fa-check text-primary me-2"></i>Développement Agile & Rapide</p>
+                    </div>
+                </div>
+                <a class="btn btn-primary py-3 px-5 mt-2" href="{% url 'about' %}">Découvrir notre histoire</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-xxl py-5 category">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title bg-white text-center text-primary px-3">Expertises</h6>
+            <h1 class="mb-5">Domaines d'Intervention</h1>
+        </div>
+        <div class="row g-3">
+            <div class="col-lg-7 col-md-6">
+                <div class="row g-3">
+                    <div class="col-lg-12 col-md-12 wow zoomIn" data-wow-delay="0.1s">
+                        <a class="position-relative d-block overflow-hidden" href="">
+                            <img class="img-fluid" src="{% static 'img/cat-1.jpg' %}" alt="Audit">
+                            <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin: 1px;">
+                                <h5 class="m-0">Audit & Conseil</h5>
+                                <small class="text-primary">Optimisation SI</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="0.3s">
+                        <a class="position-relative d-block overflow-hidden" href="">
+                            <img class="img-fluid" src="{% static 'img/cat-2.jpg' %}" alt="Full Stack">
+                            <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin: 1px;">
+                                <h5 class="m-0">Full-Stack Dev</h5>
+                                <small class="text-primary">Web & Mobile</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="0.5s">
+                        <a class="position-relative d-block overflow-hidden" href="">
+                            <img class="img-fluid" src="{% static 'img/cat-3.jpg' %}" alt="Cloud">
+                            <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin: 1px;">
+                                <h5 class="m-0">Cloud Computing</h5>
+                                <small class="text-primary">Hébergement & Scalabilité</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 col-md-6 wow zoomIn" data-wow-delay="0.7s" style="min-height: 350px;">
+                <a class="position-relative d-block h-100 overflow-hidden" href="">
+                    <img class="img-fluid position-absolute w-100 h-100" src="{% static 'img/cat-4.jpg' %}" alt="Training" style="object-fit: cover;">
+                    <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin: 1px;">
+                        <h5 class="m-0">Bootcamps IT</h5>
+                        <small class="text-primary">Formation Intensive</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
+                <h2 class="text-primary">+150</h2>
+                <p>Projets Livrés</p>
+            </div>
+            <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
+                <h2 class="text-primary">+500</h2>
+                <p>Étudiants Formés</p>
+            </div>
+            <div class="col-md-3 wow fadeIn" data-wow-delay="0.5s">
+                <h2 class="text-primary">99%</h2>
+                <p>Disponibilité Serveur</p>
+            </div>
+            <div class="col-md-3 wow fadeIn" data-wow-delay="0.7s">
+                <h2 class="text-primary">100%</h2>
+                <p>Clients Satisfaits</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

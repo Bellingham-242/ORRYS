@@ -1,0 +1,533 @@
+{% extends 'dashboards/base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #00B7F1;
+        --primary-soft: rgba(0, 183, 241, 0.08);
+        --slate-900: #0F172B;
+        --slate-800: #1e293b;
+        --slate-500: #64748b;
+        --slate-100: #F1F5F9;
+        --border-color: #E2E8F0;
+        --danger: #ef4444;
+        --success: #10b981;
+        --warning: #f59e0b;
+    }
+
+    .page-entry {
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03);
+    }
+
+    .metric-mini {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1.25rem;
+        transition: all 0.2s ease;
+    }
+
+    .metric-mini:hover {
+        border-color: var(--primary);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+    }
+
+    .nav-tabs-custom {
+        border-bottom: 2px solid var(--slate-100);
+        gap: 10px;
+    }
+
+    .nav-tabs-custom .nav-link {
+        border: none;
+        color: var(--slate-500);
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+    }
+
+    .nav-tabs-custom .nav-link.active {
+        background: var(--slate-900);
+        color: white !important;
+    }
+
+    .nav-tabs-custom .nav-link:hover:not(.active) {
+        background: var(--slate-100);
+        color: var(--slate-900);
+    }
+
+    .form-label-elite {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--slate-500);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .input-elite {
+        background: #F8FAFC !important;
+        border: 2px solid transparent !important;
+        border-radius: 12px !important;
+        padding: 11px 16px !important;
+        font-weight: 500;
+        font-size: 0.9rem;
+        color: var(--slate-900);
+        transition: all 0.2s ease;
+    }
+
+    .input-elite:focus {
+        background: white !important;
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 4px rgba(0, 183, 241, 0.12) !important;
+        outline: none;
+    }
+
+    .btn-dark-custom {
+        background: var(--slate-900);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 700;
+        transition: all 0.2s ease;
+    }
+
+    .btn-dark-custom:hover {
+        background: #000;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+
+    .table-custom thead th {
+        background: var(--slate-100);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 800;
+        color: var(--slate-500);
+        letter-spacing: 0.05em;
+        padding: 1rem;
+        border: none;
+    }
+
+    .role-badge {
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .role-admin { background: #fee2e2; color: #991b1b; }
+    .role-gestionnaire { background: #fef3c7; color: #92400e; }
+    .role-employe { background: #e0f2fe; color: #075985; }
+    .role-client { background: #dcfce7; color: #166534; }
+
+    .avatar-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--primary-soft);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+    }
+
+    .extra-small { font-size: 0.70rem; }
+</style>
+
+<div class="page-entry container-fluid p-0">
+
+    <!-- EN-TÊTE PRINCIPAL -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 extra-small fw-bold">
+                    <i class="bi bi-people-fill me-1"></i> Directory HQ
+                </span>
+                <span class="text-muted extra-small">• ORRYS NUMERIQUE</span>
+            </div>
+            <h2 class="fw-900 text-dark mb-0">Gestion des Utilisateurs</h2>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            {% if request.user.role == 'ADMIN' %}
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary rounded-3 fw-bold btn-sm px-3">
+                    <i class="bi bi-arrow-left me-1"></i> Dashboard
+                </a>
+            {% elif request.user.role == 'GESTIONNAIRE' %}
+                <a href="{% url 'gestionnaire_dashboard' %}" class="btn btn-outline-secondary rounded-3 fw-bold btn-sm px-3">
+                    <i class="bi bi-arrow-left me-1"></i> Dashboard
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- MESSAGES DE NOTIFICATION -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show rounded-4 border-0 small fw-bold mb-4 shadow-sm" role="alert">
+                <i class="bi {% if message.tags == 'error' %}bi-exclamation-triangle-fill{% else %}bi-check-circle-fill{% endif %} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- METRICS BAR -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="metric-mini d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="form-label-elite mb-1">Total Comptes</span>
+                    <h4 class="fw-900 text-dark mb-0">{{ users.count|default:"0" }}</h4>
+                </div>
+                <div class="avatar-circle bg-primary-subtle text-primary">
+                    <i class="bi bi-people fs-5"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="metric-mini d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="form-label-elite mb-1">Staff & Équipe</span>
+                    <h4 class="fw-900 text-dark mb-0">{{ staff_count|default:"0" }}</h4>
+                </div>
+                <div class="avatar-circle bg-warning-subtle text-warning">
+                    <i class="bi bi-shield-lock fs-5"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="metric-mini d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="form-label-elite mb-1">Clients Enregistrés</span>
+                    <h4 class="fw-900 text-dark mb-0">{{ clients_count|default:"0" }}</h4>
+                </div>
+                <div class="avatar-circle bg-success-subtle text-success">
+                    <i class="bi bi-person-check fs-5"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEUR PRINCIPAL AVEC ONGLETS -->
+    <div class="form-card p-4">
+        
+        <!-- BARRE DE NAVIGATION (ONGLETS) -->
+        <ul class="nav nav-tabs nav-tabs-custom mb-4" id="userTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="list-tab" data-bs-toggle="tab" data-bs-target="#tab-list" type="button" role="tab">
+                    <i class="bi bi-list-task me-2"></i>Répertoire des Utilisateurs
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="create-tab" data-bs-toggle="tab" data-bs-target="#tab-create" type="button" role="tab">
+                    <i class="bi bi-person-plus-fill me-2"></i>Nouveau Profil
+                </button>
+            </li>
+        </ul>
+
+        <!-- CONTENU DES ONGLETS -->
+        <div class="tab-content" id="userTabsContent">
+
+            <!-- TAB 1 : TABLEAU ET LISTE DES UTILISATEURS -->
+            <div class="tab-pane fade show active" id="tab-list" role="tabpanel">
+                
+                <!-- RECHERCHE & FILTRE -->
+                <div class="row g-2 mb-3">
+                    <div class="col-md-8">
+                        <div class="position-relative">
+                            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                            <input type="text" id="userSearchInput" class="form-control input-elite ps-5" placeholder="Rechercher par nom, nom d'utilisateur, email ou téléphone...">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="roleFilter" class="form-select input-elite shadow-none">
+                            <option value="">Tous les rôles</option>
+                            <option value="ADMIN">Administrateur</option>
+                            <option value="GESTIONNAIRE">Gestionnaire</option>
+                            <option value="EMPLOYE">Employé</option>
+                            <option value="CLIENT">Client</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- TABLEAU -->
+                <div class="table-responsive rounded-3 border">
+                    <table class="table table-custom align-middle mb-0" id="usersTable">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Utilisateur</th>
+                                <th>Contact</th>
+                                <th>Rôle</th>
+                                <th>Statut</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for u in users %}
+                            <tr class="user-row" data-role="{{ u.role }}">
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        {% if u.photo %}
+                                            <img src="{{ u.photo.url }}" class="avatar-circle object-fit-cover" alt="{{ u.username }}">
+                                        {% else %}
+                                            <div class="avatar-circle">
+                                                {{ u.username|slice:":2"|upper }}
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <span class="fw-bold text-dark d-block small">{{ u.get_full_name|default:u.username }}</span>
+                                            <span class="text-muted extra-small">@{{ u.username }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="d-block small text-dark fw-medium">{{ u.email }}</span>
+                                    <small class="text-muted extra-small">{{ u.phone|default:"—" }}</small>
+                                </td>
+                                <td>
+                                    {% if u.role == 'ADMIN' %}
+                                        <span class="role-badge role-admin"><i class="bi bi-shield-fill"></i> Admin</span>
+                                    {% elif u.role == 'GESTIONNAIRE' %}
+                                        <span class="role-badge role-gestionnaire"><i class="bi bi-briefcase-fill"></i> Gestionnaire</span>
+                                    {% elif u.role == 'EMPLOYE' %}
+                                        <span class="role-badge role-employe"><i class="bi bi-person-badge-fill"></i> Employé</span>
+                                    {% else %}
+                                        <span class="role-badge role-client"><i class="bi bi-person-fill"></i> Client</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if u.is_active %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill extra-small px-2 py-1">Actif</span>
+                                    {% else %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill extra-small px-2 py-1">Inactif</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group gap-1">
+                                        <button class="btn btn-sm btn-light border rounded-2" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editModal{{ u.id }}" 
+                                                title="Modifier">
+                                            <i class="bi bi-pencil-fill text-primary extra-small"></i>
+                                        </button>
+                                        
+                                        <button class="btn btn-sm btn-light border rounded-2" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteModal{{ u.id }}" 
+                                                title="Supprimer">
+                                            <i class="bi bi-trash-fill text-danger extra-small"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <i class="bi bi-people text-muted fs-1 opacity-25 d-block mb-2"></i>
+                                    <span class="text-muted small fw-bold">Aucun utilisateur trouvé dans la base de données.</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- TAB 2 : FORMULAIRE DE CRÉATION DE PROFIL -->
+            <div class="tab-pane fade" id="tab-create" role="tabpanel">
+                <div class="mb-4">
+                    <h5 class="fw-800 text-dark mb-1">Enregistrer un nouvel utilisateur</h5>
+                    <p class="text-muted extra-small">Remplissez les informations ci-dessous pour créer un nouvel accès sur la plateforme.</p>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label-elite">Identifiant (Username)</label>
+                            <input type="text" name="username" class="form-control input-elite" placeholder="ex: j.doe" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-elite">Adresse Email</label>
+                            <input type="email" name="email" class="form-control input-elite" placeholder="nom@exemple.com" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-elite">Rôle de l'utilisateur</label>
+                            <select name="role" class="form-select input-elite shadow-none" required>
+                                <option value="CLIENT" selected>Client</option>
+                                <option value="EMPLOYE">Employé</option>
+                                <option value="GESTIONNAIRE">Gestionnaire</option>
+                                <option value="ADMIN">Administrateur</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-elite">Téléphone</label>
+                            <input type="text" name="phone" class="form-control input-elite" placeholder="ex: +242 0x xxx xx xx">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-elite">Mot de passe</label>
+                            <input type="password" name="password" class="form-control input-elite" placeholder="••••••••" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-elite">Confirmation du mot de passe</label>
+                            <input type="password" name="password_confirm" class="form-control input-elite" placeholder="••••••••" required>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label-elite">Photo de profil</label>
+                            <input type="file" name="photo" class="form-control input-elite" accept="image/*">
+                            <div class="form-text mt-1 extra-small text-muted">Format recommandé : JPG ou PNG. Taille max : 2 Mo.</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-2">
+                        <button type="submit" class="btn btn-dark-custom w-100">
+                            <i class="bi bi-person-check-fill me-2"></i>Finaliser et créer l'utilisateur
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODALES DE MODIFICATION ET SUPPRESSION (Placées hors de la table pour éviter les bugs HTML) -->
+{% for u in users %}
+    <!-- MODALE DE MODIFICATION -->
+    <div class="modal fade" id="editModal{{ u.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-dark text-white p-4">
+                    <h6 class="modal-title fw-bold">Modifier le profil de {{ u.username }}</h6>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="{% url 'edit_user' u.id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-body p-4 text-start">
+                        <div class="mb-3">
+                            <label class="form-label-elite">Nom d'utilisateur</label>
+                            <input type="text" name="username" class="form-control input-elite" value="{{ u.username }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label-elite">Adresse Email</label>
+                            <input type="email" name="email" class="form-control input-elite" value="{{ u.email }}" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label-elite">Rôle</label>
+                                <select name="role" class="form-select input-elite shadow-none">
+                                    <option value="CLIENT" {% if u.role == 'CLIENT' %}selected{% endif %}>Client</option>
+                                    <option value="EMPLOYE" {% if u.role == 'EMPLOYE' %}selected{% endif %}>Employé</option>
+                                    <option value="GESTIONNAIRE" {% if u.role == 'GESTIONNAIRE' %}selected{% endif %}>Gestionnaire</option>
+                                    <option value="ADMIN" {% if u.role == 'ADMIN' %}selected{% endif %}>Administrateur</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label-elite">Téléphone</label>
+                                <input type="text" name="phone" class="form-control input-elite" value="{{ u.phone|default:'' }}">
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label-elite">Nouvelle Photo (Optionnel)</label>
+                            <input type="file" name="photo" class="form-control input-elite" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-0 p-3">
+                        <button type="button" class="btn btn-secondary btn-sm rounded-3 fw-bold" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary btn-sm rounded-3 fw-bold px-3">Enregistrer les modifications</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE DE SUPPRESSION -->
+    <div class="modal fade" id="deleteModal{{ u.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow-lg rounded-4 text-center">
+                <div class="modal-body p-4">
+                    <div class="avatar-circle bg-danger-subtle text-danger mx-auto mb-3" style="width: 50px; height: 50px;">
+                        <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+                    </div>
+                    <h6 class="fw-800 text-dark mb-1">Confirmer la suppression</h6>
+                    <p class="text-muted extra-small mb-4">Voulez-vous vraiment supprimer définitivement le compte de <strong>{{ u.username }}</strong> ?</p>
+                    
+                    <form method="POST" action="{% url 'delete_user' u.id %}">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-light w-100 rounded-3 btn-sm fw-bold border" data-bs-dismiss="modal">Non, Annuler</button>
+                            <button type="submit" class="btn btn-danger w-100 rounded-3 btn-sm fw-bold">Oui, Supprimer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<!-- SCRIPT DE RECHERCHE DYNAMIQUE ET FILTRAGE -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const searchInput = document.getElementById("userSearchInput");
+    const roleFilter = document.getElementById("roleFilter");
+    const tableRows = document.querySelectorAll("#usersTable tbody tr.user-row");
+
+    function filterUsers() {
+        const query = searchInput.value.toLowerCase().trim();
+        const selectedRole = roleFilter.value;
+
+        tableRows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            const role = row.getAttribute("data-role");
+
+            const matchesSearch = text.includes(query);
+            const matchesRole = selectedRole === "" || role === selectedRole;
+
+            if (matchesSearch && matchesRole) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+    if (searchInput) searchInput.addEventListener("keyup", filterUsers);
+    if (roleFilter) roleFilter.addEventListener("change", filterUsers);
+});
+</script>
+{% endblock %}

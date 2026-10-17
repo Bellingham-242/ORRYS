@@ -1,0 +1,140 @@
+{% extends 'dashboards/base_dashboard.html' %}
+
+{% block content %}
+<div class="container-fluid p-0 animate__animated animate__fadeIn">
+    
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+            <h2 class="fw-800 text-dark mb-1">Archives des Rapports</h2>
+            <p class="text-muted small mb-0">Suivi des activités soumises par les collaborateurs</p>
+        </div>
+        <div class="d-flex gap-3">
+            <div class="text-end me-3">
+                <span class="d-block fw-800 text-primary fs-4">{{ total_count }}</span>
+                <span class="text-muted extra-small fw-bold text-uppercase">Total reçus</span>
+            </div>
+            <div class="text-end">
+                <span class="d-block fw-800 text-success fs-4">{{ today_count }}</span>
+                <span class="text-muted extra-small fw-bold text-uppercase">Aujourd'hui</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-3">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control border-start-0 ps-0" placeholder="Rechercher un employé ou un titre...">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for r in rapports %}
+        <div class="col-xl-4 col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden position-relative">
+                
+                <div class="position-absolute top-0 end-0 p-3" style="z-index: 2;">
+                    <span class="badge bg-white text-dark shadow-sm rounded-pill fw-bold" style="font-size: 0.7rem;">
+                        {{ r.date_submission|date:"d M Y" }}
+                    </span>
+                </div>
+
+                {% if r.image %}
+                <div class="ratio ratio-16x9">
+                    <img src="{{ r.image.url }}" class="object-fit-cover" alt="Image du rapport">
+                </div>
+                {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                    <i class="bi bi-file-earmark-text text-muted opacity-25" style="font-size: 3rem;"></i>
+                </div>
+                {% endif %}
+
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar-sm bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold me-2" style="width: 32px; height: 32px; font-size: 0.7rem;">
+                            {{ r.employee.username|slice:":2"|upper }}
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-800 text-dark" style="font-size: 0.85rem;">{{ r.employee.username }}</h6>
+                            <small class="text-muted" style="font-size: 0.7rem;">{{ r.employee.get_role_display }}</small>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-800 text-dark mb-2" style="font-size: 1.1rem;">{{ r.title }}</h5>
+                    <p class="text-muted small mb-4" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.6;">
+                        {{ r.content }}
+                    </p>
+
+                    <div class="d-flex gap-2 mt-auto">
+                        <button class="btn btn-dark btn-sm rounded-3 flex-grow-1 fw-bold" data-bs-toggle="modal" data-bs-target="#viewReport{{ r.id }}">
+                            <i class="bi bi-eye me-1"></i> Lire
+                        </button>
+                        {% if user.role == 'ADMIN' %}
+                        <a href="{% url 'delete_report' r.id %}" class="btn btn-outline-danger btn-sm rounded-3 px-3" onclick="return confirm('Supprimer ce rapport définitivement ?')">
+                            <i class="bi bi-trash3"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="viewReport{{ r.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-0 rounded-4 shadow-lg">
+                    <div class="modal-header border-0 p-4">
+                        <h5 class="fw-800 text-dark mb-0">Détails du Rapport</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4 pt-0">
+                        <div class="row g-4">
+                            <div class="col-md-5">
+                                {% if r.image %}
+                                <img src="{{ r.image.url }}" class="img-fluid rounded-4 shadow-sm" alt="">
+                                {% else %}
+                                <div class="bg-light rounded-4 d-flex align-items-center justify-content-center h-100 min-vh-25">
+                                    <span class="text-muted">Aucune image fournie</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-7">
+                                <div class="mb-3">
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill mb-2">Sujet</span>
+                                    <h4 class="fw-800 text-dark">{{ r.title }}</h4>
+                                    <small class="text-muted"><i class="bi bi-clock me-1"></i> Soumis le {{ r.date_submission|date:"d F Y à H:i" }}</small>
+                                </div>
+                                <hr class="opacity-10">
+                                <div class="report-content p-3 bg-light rounded-3">
+                                    <p class="text-dark small mb-0" style="white-space: pre-line; line-height: 1.7;">
+                                        {{ r.content }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="bg-white rounded-5 p-5 shadow-sm border border-dashed">
+                <i class="bi bi-folder-x text-muted opacity-25 display-1"></i>
+                <h4 class="fw-800 text-dark mt-4">Aucun rapport archivé</h4>
+                <p class="text-muted">Les rapports soumis par vos employés apparaîtront ici.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .min-vh-25 { min-height: 250px; }
+    .extra-small { font-size: 0.6rem; letter-spacing: 0.05em; }
+    .card:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+</style>
+{% endblock %}

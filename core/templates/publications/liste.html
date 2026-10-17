@@ -1,0 +1,35 @@
+{% extends "dashboards/base_dashboard.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="fw-800">Fil d'actualité</h2>
+        {% if user.role != 'CLIENT' %}
+        <button class="btn btn-dark rounded-pill px-4">Nouvelle Publication</button>
+        {% endif %}
+    </div>
+
+    <div class="row g-4">
+        {% for pub in pubs %}
+        <div class="col-md-6 col-lg-4">
+            <article class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                {% if pub.image %}
+                <img src="{{ pub.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                {% endif %}
+                
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge {% if pub.status == 'PUBLIC' %}bg-success{% else %}bg-info{% endif %} rounded-pill">
+                            {{ pub.get_status_display }}
+                        </span>
+                        <small class="text-muted">{{ pub.date_creation|date:"d M Y" }}</small>
+                    </div>
+                    <h5 class="fw-bold">{{ pub.title }}</h5>
+                    <p class="text-muted small">{{ pub.content|truncatewords:20 }}</p>
+                </div>
+            </article>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

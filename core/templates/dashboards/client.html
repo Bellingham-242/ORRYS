@@ -1,0 +1,329 @@
+{% extends 'dashboards/base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid p-0 animate__animated animate__fadeIn">
+
+    <!-- HERO HEADER CLIENT -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white mb-4 overflow-hidden position-relative">
+        <div class="card-body p-4 p-md-5">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-bold extra-small">
+                            <i class="bi bi-shield-check me-1"></i> Espace Client Sécurisé
+                        </span>
+                        {% if user.is_approved %}
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2 fw-bold extra-small">
+                            <i class="bi bi-patch-check-fill me-1"></i> Compte Validé
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <h2 class="fw-800 text-dark mb-2">Bienvenue chez ORRYS, {{ user.get_full_name|default:user.username }} 👋</h2>
+                    <p class="text-muted mb-4 pe-lg-4" style="line-height: 1.6;">
+                        Gérez vos prestations informatiques, suivez l'avancement de vos projets web, 
+                        accédez à vos documents administratifs et formulez vos demandes de support technique en toute simplicité.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-3">
+                        <button class="btn btn-primary btn-lg rounded-3 px-4 py-2-5 fw-bold shadow-sm d-flex align-items-center gap-2" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#modalNouvelleDemande">
+                            <i class="bi bi-plus-circle-fill fs-5"></i>
+                            <span>Nouvelle demande</span>
+                        </button>
+
+                        <button class="btn btn-outline-dark btn-lg rounded-3 px-4 py-2-5 fw-bold d-flex align-items-center gap-2" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#modalFactures">
+                            <i class="bi bi-file-earmark-receipt fs-5"></i>
+                            <span>Mes demandes & Factures</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 d-none d-lg-block text-center position-relative">
+                    <div class="hero-illustration p-4 bg-light rounded-4 border text-primary">
+                        <i class="bi bi-laptop display-1 opacity-75"></i>
+                        <div class="mt-2 fw-bold text-dark">ORRYS Numérique & Services</div>
+                        <small class="text-muted">Accompagnement & Développement Web</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARTE DE STATISTIQUES RAPIDES -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-3 d-flex flex-row align-items-center gap-3">
+                <div class="icon-box bg-primary-subtle text-primary rounded-3 p-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                    <i class="bi bi-journal-text fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted extra-small fw-bold text-uppercase mb-1">Demandes Soumises</h6>
+                    <h4 class="fw-800 text-dark mb-0">{{ service_requests.count|default:"0" }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-3 d-flex flex-row align-items-center gap-3">
+                <div class="icon-box bg-warning-subtle text-warning rounded-3 p-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                    <i class="bi bi-hourglass-split fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted extra-small fw-bold text-uppercase mb-1">En Cours de Traitement</h6>
+                    <h4 class="fw-800 text-dark mb-0">{{ pending_count|default:"0" }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-3 d-flex flex-row align-items-center gap-3">
+                <div class="icon-box bg-success-subtle text-success rounded-3 p-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                    <i class="bi bi-headset fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted extra-small fw-bold text-uppercase mb-1">Support Technique</h6>
+                    <span class="badge bg-success rounded-pill px-2 py-1 extra-small">Disponible 24h/7j</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTIONS SUIVI & ASSISTANCE -->
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-800 text-dark mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-clock-history text-primary"></i> Vos Demandes & Projets
+                        </h5>
+                        <small class="text-muted">Historique récent de vos sollicitations</small>
+                    </div>
+                    <button class="btn btn-sm btn-light rounded-3 fw-bold border" data-bs-toggle="modal" data-bs-target="#modalNouvelleDemande">
+                        <i class="bi bi-plus me-1"></i> Créer
+                    </button>
+                </div>
+
+                <div class="card-body p-4 pt-0">
+                    {% if service_requests %}
+                        <div class="table-responsive">
+                            <table class="table align-middle table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr class="text-muted extra-small text-uppercase">
+                                        <th class="border-0">Service / Nature</th>
+                                        <th class="border-0">Date</th>
+                                        <th class="border-0">Statut</th>
+                                        <th class="border-0 text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for req in service_requests %}
+                                    <tr>
+                                        <td class="fw-bold text-dark">{{ req.nature }}</td>
+                                        <td class="small text-muted">{{ req.date_requested|date:"d M Y" }}</td>
+                                        <td>
+                                            {% if req.is_read %}
+                                                <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-3 py-1">Prise en charge</span>
+                                            {% else %}
+                                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-1">En attente</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-outline-secondary rounded-2" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#modalDetail{{ req.id }}" 
+                                                    title="Voir détails">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- MODALES DÉTAILS DÉPLACÉES HORS DU TABLEAU POUR COMPATIBILITÉ HTML -->
+                        {% for req in service_requests %}
+                        <div class="modal fade" id="modalDetail{{ req.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-0 shadow-lg rounded-4">
+                                    <div class="modal-header bg-light p-4 rounded-top-4">
+                                        <h5 class="modal-title fw-bold text-dark">Détail de la demande #{{ req.id }}</h5>
+                                        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body p-4 text-start">
+                                        <div class="mb-3">
+                                            <span class="text-muted extra-small text-uppercase fw-bold d-block">Nature</span>
+                                            <strong class="text-dark">{{ req.nature }}</strong>
+                                        </div>
+                                        <div class="mb-3">
+                                            <span class="text-muted extra-small text-uppercase fw-bold d-block">Explication</span>
+                                            <p class="text-dark mb-0" style="white-space: pre-line;">{{ req.explanation }}</p>
+                                        </div>
+                                        {% if req.image %}
+                                        <div class="mb-3">
+                                            <span class="text-muted extra-small text-uppercase fw-bold d-block mb-1">Pièce jointe</span>
+                                            <a href="{{ req.image.url }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-3">
+                                                <i class="bi bi-paperclip me-1"></i> Voir l'image jointe
+                                            </a>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    {% else %}
+                        <div class="text-center py-5 bg-light rounded-4 border border-dashed">
+                            <i class="bi bi-folder2-open display-4 text-muted opacity-50 mb-3 d-block"></i>
+                            <h6 class="fw-bold text-dark mb-1">Aucune demande active</h6>
+                            <p class="text-muted small mb-3">Vous n'avez pas encore soumis de projet ou de demande de maintenance.</p>
+                            <button class="btn btn-primary btn-sm rounded-3 fw-bold px-3" data-bs-toggle="modal" data-bs-target="#modalNouvelleDemande">
+                                Soumettre une première demande
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION ASSISTANCE -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                <div class="card-header bg-white border-0 p-4">
+                    <h5 class="fw-800 text-dark mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-headset text-primary"></i> Assistance Client
+                    </h5>
+                    <small class="text-muted">Un problème ? Une question rapide ?</small>
+                </div>
+                <div class="card-body p-4 pt-0 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="p-3 bg-light rounded-3 mb-3 border">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="bi bi-telephone-outbound-fill fs-4 text-primary"></i>
+                                <div>
+                                    <span class="extra-small text-muted text-uppercase d-block fw-bold">Ligne Directe Support</span>
+                                    <strong class="text-dark">+242 06 000 00 00</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 mb-3 border">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="bi bi-envelope-check-fill fs-4 text-primary"></i>
+                                <div>
+                                    <span class="extra-small text-muted text-uppercase d-block fw-bold">Email de contact</span>
+                                    <strong class="text-dark">contact@orrys.com</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'contact' %}" class="btn btn-outline-primary w-100 rounded-3 fw-bold py-2 mt-3">
+                        <i class="bi bi-chat-dots me-1"></i> Ouvrir un ticket de contact
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODALE 1 : NOUVELLE DEMANDE -->
+<div class="modal fade" id="modalNouvelleDemande" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-primary text-white p-4 rounded-top-4">
+                <div>
+                    <h5 class="modal-title fw-800 mb-0" id="modalNouvelleDemandeLabel">
+                        <i class="bi bi-plus-circle me-2"></i>Nouvelle Demande de Prestation
+                    </h5>
+                    <small class="text-white-50">Transmettez votre besoin aux équipes d'ORRYS</small>
+                </div>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form method="POST" action="{% url 'client_dashboard' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark small">Type de Prestation / Nature du Besoin</label>
+                        <select name="nature" class="form-select rounded-3 shadow-none" required>
+                            <option value="" selected disabled>Choisir un type de service...</option>
+                            <option value="Création Site Web">Développement / Création de Site Web</option>
+                            <option value="Maintenance & Informatique">Maintenance & Réparation Informatique</option>
+                            <option value="Design & Branding">Design Graphique & Branding</option>
+                            <option value="Autre Demande">Autre prestation sur mesure</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark small">Explication détaillée de votre demande</label>
+                        <textarea name="explanation" class="form-control rounded-3 shadow-none" rows="4" 
+                                  placeholder="Décrivez vos besoins, exigences ou les symptômes du problème rencontré..." required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark small">Fichier / Image d'illustration (optionnel)</label>
+                        <input type="file" name="image" class="form-control rounded-3 shadow-none" accept="image/*,.pdf">
+                    </div>
+
+                    <div class="alert alert-info border-0 rounded-3 small text-secondary d-flex align-items-center gap-2 mb-0">
+                        <i class="bi bi-info-circle-fill fs-5 text-primary"></i>
+                        <div>Nos équipes analyseront votre demande et vous recontacteront sous 24h.</div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light border-0 p-3">
+                    <button type="button" class="btn btn-light rounded-3 fw-bold text-muted" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary rounded-3 fw-bold px-4">Envoyer la demande</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODALE 2 : FACTURES -->
+<div class="modal fade" id="modalFactures" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-dark text-white p-4 rounded-top-4">
+                <div>
+                    <h5 class="modal-title fw-800 mb-0">
+                        <i class="bi bi-file-earmark-receipt me-2"></i>Factures & Documents Administratifs
+                    </h5>
+                    <small class="text-white-50">Consultez et téléchargez vos factures et devis</small>
+                </div>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body p-4 text-center">
+                <div class="py-4">
+                    <i class="bi bi-receipt-cutoff text-muted display-3 mb-3 d-block opacity-50"></i>
+                    <h6 class="fw-bold text-dark mb-2">Aucune facture émise pour le moment</h6>
+                    <p class="text-muted small max-w-md mx-auto mb-0">
+                        Dès qu'une prestation sera validée ou qu'un devis sera approuvé, vos factures acquittées apparaîtront ici au format PDF.
+                    </p>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light border-0 p-3">
+                <button type="button" class="btn btn-secondary rounded-3 fw-bold px-4" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fw-800 { font-weight: 800; }
+    .extra-small { font-size: 0.70rem; letter-spacing: 0.05em; }
+    .py-2-5 { padding-top: 0.65rem; padding-bottom: 0.65rem; }
+    .border-dashed { border-style: dashed !important; }
+    .max-w-md { max-width: 450px; }
+</style>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends 'dashboards/base_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --edit-primary: #F59E0B; /* Couleur ambrée pour signifier la modification */
+        --dark-slate: #0F172A;
+        --card-border: #E2E8F0;
+    }
+
+    .dashboard-wrapper {
+        animation: fadeIn 0.5s ease-out;
+        padding: 2rem 0;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .glass-edit-card {
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        box-shadow: 0 15px 35px -5px rgba(245, 158, 11, 0.05);
+        padding: 2.5rem;
+    }
+
+    .label-pro {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control-pro {
+        background: #F8FAFC !important;
+        border: 1.5px solid #E2E8F0 !important;
+        border-radius: 12px !important;
+        padding: 0.85rem 1rem !important;
+        font-weight: 600;
+        color: var(--dark-slate);
+        transition: all 0.2s;
+    }
+
+    .form-control-pro:focus {
+        border-color: var(--edit-primary) !important;
+        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15) !important;
+        background: #fff !important;
+    }
+
+    /* Checkbox de confirmation stylisée */
+    .confirmation-box {
+        background: #FFFBEB;
+        border: 1px solid #FDE68A;
+        border-radius: 16px;
+        padding: 1.5rem;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--edit-primary);
+        border-color: var(--edit-primary);
+    }
+
+    .btn-action-edit {
+        background: var(--dark-slate);
+        color: white;
+        border-radius: 14px;
+        padding: 1rem;
+        font-weight: 800;
+        width: 100%;
+        transition: 0.3s;
+        border: none;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-action-edit:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+</style>
+
+<div class="dashboard-wrapper container d-flex justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        
+        <div class="glass-edit-card">
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+                <div class="bg-warning-subtle text-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
+                    <i class="bi bi-pencil-square"></i>
+                </div>
+                <div>
+                    <h3 class="fw-800 text-dark mb-0">Modifier la Transaction</h3>
+                    <p class="text-muted small fw-bold mb-0">ID de référence : #TR-00{{ transaction.id }} | Enregistrée le {{ transaction.date_creation|date:"d/m/Y" }}</p>
+                </div>
+                <a href="{% url 'gestion_caisse' %}" class="btn btn-light btn-sm ms-auto fw-bold text-secondary rounded-pill px-3">
+                    <i class="bi bi-x-lg"></i> Fermer
+                </a>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label class="label-pro">Sens du flux financier</label>
+                        <select name="type" class="form-select form-control-pro shadow-none">
+                            <option value="ENTREE" {% if transaction.type == 'ENTREE' %}selected{% endif %}>↗ Entrée (Encaissement)</option>
+                            <option value="SORTIE" {% if transaction.type == 'SORTIE' %}selected{% endif %}>↘ Sortie (Décaissement)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-pro">Montant Net (FCFA)</label>
+                        <input type="number" name="montant" value="{{ transaction.montant|stringformat:'s' }}" class="form-control form-control-pro text-end" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="label-pro">Motif Principal</label>
+                    <input type="text" name="motif" value="{{ transaction.motif }}" class="form-control form-control-pro" required>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label class="label-pro">Employé lié (Facultatif)</label>
+                        <select name="concerne_employe" class="form-select form-control-pro shadow-none">
+                            <option value="">-- Opération Bureau / Aucun --</option>
+                            {% for emp in employes %}
+                            <option value="{{ emp.id }}" {% if transaction.concerne_employe and transaction.concerne_employe.id == emp.id %}selected{% endif %}>
+                                {{ emp.username|upper }} ({{ emp.get_role_display }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-pro">Justificatif (Remplacer ?)</label>
+                        <input type="file" name="image" class="form-control form-control-pro">
+                        {% if transaction.image %}
+                        <div class="mt-2 text-end">
+                            <a href="{{ transaction.image.url }}" target="_blank" class="text-primary small fw-bold text-decoration-none">
+                                <i class="bi bi-eye"></i> Voir le justificatif actuel
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="label-pro">Notes & Explications détaillées</label>
+                    <textarea name="description" class="form-control form-control-pro" rows="3">{{ transaction.description }}</textarea>
+                </div>
+
+                <div class="confirmation-box mb-4">
+                    <div class="form-check d-flex align-items-center gap-2">
+                        <input class="form-check-input" type="checkbox" name="confirmation_modification" value="yes" id="confirmCheck" required style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
+                        <label class="form-check-label text-dark fw-bold small" for="confirmCheck" style="cursor: pointer;">
+                            Je confirme sous mon entière responsabilité l'exactitude de ces modifications. 
+                            <span class="d-block text-muted" style="font-size: 0.7rem; font-weight: normal;">L'historique des modifications sera conservé par l'Administration.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-action-edit">
+                    <i class="bi bi-save me-2"></i> Enregistrer les modifications
+                </button>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
