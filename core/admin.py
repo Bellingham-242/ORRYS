@@ -7,6 +7,8 @@ from .models import (
 )
 
 
+from django.utils.safestring import mark_safe  # <-- Importe bien mark_safe en haut du fichier si ce n'est pas fait
+
 # --- CONFIGURATION UTILISATEUR (CUSTOM USER) ---
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
@@ -35,19 +37,20 @@ class CustomUserAdmin(UserAdmin):
             'EMPLOYE': '#28a745',       # Vert
             'CLIENT': '#6c757d',        # Gris
         }
-        return format_html(
-            '<span style="color: white; background-color: {}; padding: 3px 10px; border-radius: 10px; font-weight: bold; font-size: 10px;">{}</span>',
-            colors.get(obj.role, '#000'),
-            obj.get_role_display()
+        bg_color = colors.get(obj.role, '#000')
+        label = obj.get_role_display()
+        return mark_safe(
+            f'<span style="color: white; background-color: {bg_color}; padding: 3px 10px; border-radius: 10px; font-weight: bold; font-size: 10px;">{label}</span>'
         )
     role_badge.short_description = "Rôle"
 
     def is_approved_status(self, obj):
         if obj.is_approved:
-            return format_html('<span style="color: #28a745;">✔ Approuvé</span>')
-        return format_html('<span style="color: #dc3545; font-weight: bold;">✘ En attente</span>')
+            return mark_safe('<span style="color: #28a745;">✔ Approuvé</span>')
+        return mark_safe('<span style="color: #dc3545; font-weight: bold;">✘ En attente</span>')
     is_approved_status.short_description = "Validation"
 
+    
 
 # --- CONFIGURATION SYSTÈME (SINGLETON) ---
 @admin.register(SystemConfig)
