@@ -1,0 +1,236 @@
+/********** Template CSS **********/
+:root {
+    /* Couleurs extraites de votre logo */
+    --primary: #00B7F1;    /* Bleu ciel central */
+    --secondary: #B01E44;  /* Rose bordeaux du texte */
+    --light: #F4FAFD;      /* Bleu-blanc très clair pour la fraîcheur */
+    --dark: #0F172B;       /* Bleu marine profond pour les textes */
+    --white: #FFFFFF;
+}
+
+.fw-medium { font-weight: 600 !important; }
+.fw-semi-bold { font-weight: 700 !important; }
+
+.back-to-top {
+    position: fixed;
+    display: none;
+    right: 45px;
+    bottom: 45px;
+    z-index: 99;
+    border-radius: 50px;
+}
+
+/*** Spinner ***/
+#spinner {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .5s ease-out, visibility 0s linear .5s;
+    z-index: 99999;
+}
+#spinner.show {
+    transition: opacity .5s ease-out, visibility 0s linear 0s;
+    visibility: visible;
+    opacity: 1;
+}
+
+/*** Button - Style Premium ***/
+.btn {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    transition: .5s;
+    border-radius: 50px; /* Arrondi moderne */
+}
+
+.btn-primary {
+    color: var(--white);
+    background-color: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 4px 15px rgba(0, 183, 241, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(176, 30, 68, 0.3);
+}
+
+.btn-square, .btn-sm-square, .btn-lg-square {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: normal;
+}
+.btn-square { width: 38px; height: 38px; }
+.btn-sm-square { width: 32px; height: 32px; }
+.btn-lg-square { width: 48px; height: 48px; }
+
+/*** Navbar ***/
+.navbar-light .navbar-nav .nav-link {
+    margin-right: 30px;
+    padding: 25px 0;
+    color: var(--dark);
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    outline: none;
+    transition: .3s;
+}
+
+/*** Navbar ***/
+.nav-bar {
+    position: relative;
+    padding: 0 3rem;
+    background: #ffffff;
+    /* Supprime ou commente la ligne ci-dessous si elle existe */
+    /* border-bottom: 1px solid var(--primary); */ 
+    border-bottom: none !important; /* Force la suppression */
+    z-index: 999;
+}
+
+/* Supprime aussi l'ombre qui peut simuler une ligne */
+.sticky-top {
+    box-shadow: none !important;
+}
+
+.navbar-light .navbar-nav .nav-link:hover,
+.navbar-light .navbar-nav .nav-link.active {
+    color: var(--primary) !important;
+}
+
+/* Barre de soulignement animée */
+@media (min-width: 992px) {
+    .navbar-light .navbar-nav .nav-link::before {
+        position: absolute;
+        content: "";
+        width: 0;
+        height: 2px;
+        bottom: 20px;
+        left: 0;
+        background: var(--primary);
+        transition: .3s;
+    }
+    .navbar-light .navbar-nav .nav-link:hover::before,
+    .navbar-light .navbar-nav .nav-link.active::before {
+        width: 80%;
+    }
+}
+
+/*** Section Title - Style Logo ***/
+.section-title {
+    position: relative;
+    display: inline-block;
+    text-transform: uppercase;
+    color: var(--secondary) !important; /* Titres en Rose Bordeaux */
+    font-weight: 700;
+}
+
+.section-title::before, .section-title::after {
+    position: absolute;
+    content: "";
+    height: 2px;
+    background: var(--primary); /* Lignes en Bleu Ciel */
+    z-index: -1;
+}
+
+.section-title::before { width: calc(100% + 80px); top: 4px; left: -40px; }
+.section-title::after { width: calc(100% + 120px); bottom: 5px; left: -60px; }
+
+/*** Service & Team Items ***/
+.service-item {
+    background: var(--light);
+    border-radius: 15px;
+    transition: .5s;
+}
+
+.service-item:hover {
+    margin-top: -10px;
+    background: var(--primary);
+    box-shadow: 0 10px 30px rgba(0, 183, 241, 0.2);
+}
+
+.service-item:hover * {
+    color: var(--white) !important;
+}
+
+.team-item img {
+    transition: .5s;
+    border-radius: 15px 15px 0 0;
+}
+
+.team-item:hover img {
+    transform: scale(1.1);
+}
+
+/*** Testimonial ***/
+.testimonial-carousel .owl-item.center .testimonial-text {
+    background: var(--primary) !important;
+    border-radius: 15px;
+}
+
+.testimonial-carousel .owl-dot.active {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+/*** Footer ***/
+.footer {
+    background: #0F172B !important; /* Bleu nuit très sombre */
+}
+
+.footer .btn.btn-social:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.footer .btn.btn-link:hover {
+    color: var(--primary) !important;
+    letter-spacing: 1px;
+}
+
+/* --- Responsivité Avancée --- */
+@media (max-width: 768px) {
+    h1, .display-3 {
+        font-size: 2.5rem !important; /* Réduction de la taille sur mobile */
+        letter-spacing: 0;
+    }
+
+    .container-fluid.page-header {
+        padding: 3rem 0 !important; /* Moins d'espace en haut sur mobile */
+    }
+
+    p {
+        font-size: 1rem;
+        padding: 0 15px;
+    }
+
+    .navbar-brand img {
+        max-height: 45px; /* Logo plus petit sur mobile */
+    }
+}
+
+/* Ajustement pour les très petits écrans (iPhone SE, etc.) */
+@media (max-width: 400px) {
+    h1 {
+        font-size: 2rem !important;
+    }
+    
+    .btn {
+        width: 100%; /* Boutons en pleine largeur pour faciliter le clic */
+        margin-bottom: 10px;
+    }
+}
+
+/* Animation d'entrée douce */
+.wow.fadeInUp {
+    animation-duration: 1.2s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Effet de focus sur les blocs de texte */
+.testimonial-item:hover .testimonial-text {
+    transform: scale(1.02);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    transition: all 0.4s ease;
+}
