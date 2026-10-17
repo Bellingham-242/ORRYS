@@ -167,7 +167,7 @@
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 extra-small fw-bold">
                     <i class="bi bi-people-fill me-1"></i> Directory HQ
                 </span>
-                <span class="text-muted extra-small">• ORRYS NUMERIQUE</span>
+                <span class="text-muted extra-small">ORRYS NUMERIQUE</span>
             </div>
             <h2 class="fw-900 text-dark mb-0">Gestion des Utilisateurs</h2>
         </div>
@@ -370,6 +370,8 @@
 
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
+                    <!-- CHAMP CACHÉ ESSENTIEL POUR DÉTECTER L'ACTION DE CRÉATION -->
+                    <input type="hidden" name="action" value="create">
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -426,7 +428,7 @@
     </div>
 </div>
 
-<!-- MODALES DE MODIFICATION ET SUPPRESSION (Placées hors de la table pour éviter les bugs HTML) -->
+<!-- MODALES DE MODIFICATION ET SUPPRESSION -->
 {% for u in users %}
     <!-- MODALE DE MODIFICATION -->
     <div class="modal fade" id="editModal{{ u.id }}" tabindex="-1" aria-hidden="true">
