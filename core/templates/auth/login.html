@@ -3,8 +3,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <!-- FORCER LE RENDU ORDINATEUR / DESKTOP SUR TOUS LES APPAREILS -->
-    <meta name="viewport" content="width=1280, initial-scale=1.0">
+    <!-- Viewport adaptatif professionnel et net sur tous les écrans -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>Connexion | ORRYS Numerique</title>
     
@@ -21,38 +21,36 @@
             --border-color: #E2E8F0;
         }
 
-        /* FORCER LA LARGEUR ET L'AFFICHAGE DESKTOP EN PERMANENCE */
         html, body {
-            min-width: 1280px !important;
             height: 100%;
             margin: 0;
             padding: 0;
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--dark);
             color: #334155;
-            overflow-x: auto;
         }
 
         .login-container {
             display: flex;
             min-height: 100vh;
             width: 100%;
+            flex-direction: row;
         }
 
-        /* --- SECTION VISUELLE GAUCHE DYNAMIQUE (MAINTENUE EN DESKTOP) --- */
+        /* --- SECTION VISUELLE GAUCHE DYNAMIQUE --- */
         .login-side-image {
             flex: 1.25;
             position: relative;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            padding: 80px;
+            padding: 60px;
             color: white;
             overflow: hidden;
             background-color: var(--dark);
+            min-height: 400px;
         }
 
-        /* SLIDE IMAGEOPTIMISÉE POUR RENDER MOBILE/DESKTOP */
         .bg-slide {
             position: absolute;
             top: 0; 
@@ -64,7 +62,7 @@
             z-index: 1;
             opacity: 0;
             transition: opacity 2s ease-in-out;
-            transform: scale(1.1); 
+            transform: scale(1.05); 
             will-change: transform, opacity;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
@@ -76,11 +74,10 @@
         }
 
         @keyframes kenburns {
-            from { transform: scale(1.05); }
-            to { transform: scale(1.22); }
+            from { transform: scale(1.02); }
+            to { transform: scale(1.15); }
         }
 
-        /* SUPERPOSITION GRADIENT PRO */
         .login-side-image::after {
             content: "";
             position: absolute;
@@ -88,14 +85,14 @@
             left: 0; 
             width: 100%; 
             height: 100%;
-            background: linear-gradient(180deg, rgba(15, 23, 43, 0.4) 0%, rgba(15, 23, 43, 0.85) 65%, rgba(15, 23, 43, 0.98) 100%);
+            background: linear-gradient(180deg, rgba(15, 23, 43, 0.3) 0%, rgba(15, 23, 43, 0.8) 60%, rgba(15, 23, 43, 0.95) 100%);
             z-index: 2;
         }
 
         .content-wrapper {
             position: relative;
             z-index: 3;
-            max-width: 650px;
+            max-width: 600px;
         }
 
         .hero-badge {
@@ -111,15 +108,15 @@
             font-weight: 800;
             letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             backdrop-filter: blur(8px);
         }
 
         .hero-title {
-            font-size: 3.2rem;
+            font-size: clamp(2.2rem, 4vw, 3.2rem);
             font-weight: 800;
             line-height: 1.15;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             letter-spacing: -1px;
             background: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 100%);
             -webkit-background-clip: text;
@@ -127,11 +124,12 @@
         }
 
         .hero-desc {
-            font-size: 1.1rem;
+            font-size: 1rem;
             line-height: 1.6;
             border-left: 3px solid var(--primary);
-            padding-left: 18px;
+            padding-left: 15px;
             color: #94A3B8;
+            margin-bottom: 0;
         }
 
         /* --- SECTION FORMULAIRE --- */
@@ -141,7 +139,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 60px 40px;
+            padding: 50px 30px;
             position: relative;
             z-index: 4;
             box-shadow: -10px 0 40px rgba(0, 0, 0, 0.08);
@@ -149,7 +147,7 @@
 
         .form-box { 
             width: 100%; 
-            max-width: 420px; 
+            max-width: 400px; 
         }
 
         .brand-header {
@@ -160,31 +158,31 @@
             background: #F8FAFC;
             border-radius: 12px;
             border: 1px solid var(--border-color);
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
 
         .brand-text {
             font-weight: 800;
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             letter-spacing: -0.5px;
             color: var(--dark);
         }
 
         .form-label {
             font-family: 'Inter', sans-serif;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-weight: 700;
             letter-spacing: 1px;
             color: #64748B;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .form-control {
             border: 1.5px solid var(--border-color);
-            padding: 14px 18px;
+            padding: 12px 16px;
             border-radius: 12px;
             background: #F8FAFC;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             color: var(--dark);
             font-weight: 600;
             transition: all 0.25s ease;
@@ -201,10 +199,10 @@
             background: var(--dark);
             color: #FFFFFF;
             border: none;
-            padding: 16px;
+            padding: 14px;
             border-radius: 12px;
             font-weight: 700;
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             letter-spacing: 0.5px;
             width: 100%;
             transition: all 0.3s ease;
@@ -221,6 +219,30 @@
             box-shadow: 0 8px 25px rgba(0, 183, 241, 0.3);
         }
 
+        .btn-back-home {
+            border: 1.5px solid var(--border-color);
+            color: #64748B;
+            background: #ffffff;
+            padding: 13px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-back-home:hover {
+            background: #F1F5F9;
+            color: var(--dark);
+            border-color: var(--dark);
+        }
+
         .status-pill {
             display: inline-flex;
             align-items: center;
@@ -233,12 +255,33 @@
             color: #475569;
             letter-spacing: 0.5px;
         }
+
+        /* RESPONSIVE DESIGN FLUIDE (MOBILE / TABLETTE / DESKTOP) */
+        @media (max-width: 991.98px) {
+            .login-container {
+                flex-direction: column;
+            }
+            .login-side-image {
+                min-height: 320px;
+                padding: 40px 30px;
+            }
+            .login-side-form {
+                padding: 40px 20px;
+                box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
+            }
+            .hero-title {
+                font-size: 2rem;
+            }
+            .hero-desc {
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="login-container">
-        <!-- Section Visuelle Animée (Ken Burns) -->
+        <!-- Section Visuelle Animée (Ken Burns avec support mobile garanti) -->
         <div class="login-side-image">
             <div class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80');"></div>
             <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80');"></div>
@@ -257,7 +300,7 @@
         <div class="login-side-form">
             <div class="form-box">
                 <div class="brand-header">
-                    <img src="{% static 'img/image.png' %}" alt="Logo" height="28" style="object-fit: contain;">
+                    <img src="{% static 'img/image.png' %}" alt="Logo" height="26" style="object-fit: contain;">
                     <span class="brand-text">ORRYS <span style="color: var(--primary);">NUMÉRIQUE</span></span>
                 </div>
 
@@ -266,7 +309,7 @@
                     <p class="text-muted small mb-0">Portail d'administration sécurisé</p>
                 </div>
 
-               <form method="post">
+                <form method="post">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label class="form-label">IDENTIFIANT ACCÈS</label>
@@ -277,14 +320,14 @@
                         <input type="password" name="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
                     </div>
                     
-                    <!-- Bouton Valider / Ouvrir la session -->
+                    <!-- Bouton Connexion -->
                     <button type="submit" class="btn btn-login mb-3">
                         <span>OUVRIR LA SESSION</span>
                         <i class="bi bi-arrow-right"></i>
                     </button>
 
-                    <!-- Bouton Retour au site principal (Racine) -->
-                    <a href="{% url 'index' %}" class="btn btn-outline-secondary w-100 py-3 rounded-3 fw-bold mb-4 d-inline-flex align-items-center justify-content-center gap-2 text-decoration-none" style="border: 1.5px solid var(--border-color); color: #64748B; font-size: 0.88rem; transition: all 0.3s ease;">
+                    <!-- Bouton Retour à l'accueil -->
+                    <a href="{% url 'index' %}" class="btn btn-back-home mb-4">
                         <i class="bi bi-house-door fs-6"></i>
                         <span>RETOURNER À L'ACCUEIL</span>
                     </a>
@@ -294,7 +337,7 @@
                     </div>
                 </form>
 
-                <div class="mt-5 pt-4 border-top text-center">
+                <div class="mt-4 pt-3 border-top text-center">
                     <div class="status-pill">
                         <span class="spinner-grow text-success p-0" style="width: 8px; height: 8px;" role="status"></span>
                         <span>SYSTEM STATUS: OPERATIONAL</span>
@@ -304,12 +347,11 @@
         </div>
     </div>
 
-    <!-- Script Carrousel & Préchargement Mobile Optimisé -->
+    <!-- Script Carrousel & Préchargement des slides -->
     <script>
         const slides = document.querySelectorAll('.bg-slide');
         let current = 0;
 
-        // Préchargement des images en cache navigateur dès l'ouverture
         window.addEventListener('load', () => {
             slides.forEach(slide => {
                 const url = slide.style.backgroundImage.replace(/url\((['"])?(.*?)\1\)/, '$2');
@@ -326,7 +368,6 @@
             slides[current].classList.add('active');
         }
 
-        // Transition toutes les 7 secondes
         setInterval(nextSlide, 7000);
     </script>
 </body>
