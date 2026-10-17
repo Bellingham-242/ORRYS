@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <title>{% block title %}ORRYS Numerique | Expertise IT & Formation{% endblock %}</title>
     
-    <!-- FORCER LE MODE ORDINATEUR PAR DÉFAUT SUR TOUS LES TÉLÉPHONES -->
-    <meta name="viewport" content="width=1280, initial-scale=0.35, minimum-scale=0.25, maximum-scale=3.0, user-scalable=yes">
+    <!-- VIEWPORT DYNAMIQUE (GÉRÉ PAR JAVASCRIPT CI-DESSOUS) -->
+    <meta id="viewportMeta" name="viewport" content="width=1280, initial-scale=0.35, minimum-scale=0.2, maximum-scale=3.0, user-scalable=yes">
 
     <meta content="Informatique, Formation, Développement, Maintenance, ORRYS Numerique" name="keywords">
     <meta content="ORRYS Numerique : Votre partenaire de confiance pour les services informatiques, la formation technologique et l'accompagnement digital." name="description">
@@ -45,18 +45,24 @@
             --border-color: #E2E8F0;
         }
 
-        /* VERROUILLAGE DE LA MISE EN PAGE MODE DESKTOP ORDINATEUR SUR MOBILE */
-        html, body {
+        /* DÉFINITION DES MODES DESKTOP / MOBILE */
+        html.mode-desktop, body.mode-desktop {
             min-width: 1280px !important;
             width: 1280px !important;
             margin: 0 auto !important;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--light);
-            color: #334155;
             overflow-x: auto !important;
         }
 
-        /* --- NAVBAR SAAS DESKTOP --- */
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--light);
+            color: #334155;
+            transition: all 0.2s ease;
+        }
+
+        /* --- NAVBAR SAAS --- */
         .custom-navbar {
             background-color: rgba(255, 255, 255, 0.98) !important; 
             backdrop-filter: blur(12px);
@@ -143,7 +149,30 @@
             color: var(--primary);
         }
 
-        /* BOUTONS D'ACTION (PWA & DÉMARRER) */
+        /* BOUTONS D'ACTION NAVBAR */
+        .btn-toggle-desktop {
+            background-color: #0F172B;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 0.7rem 1.25rem;
+            border-radius: 10px;
+            border: 1px solid var(--dark);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(15, 23, 43, 0.15);
+        }
+
+        .btn-toggle-desktop:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
         .btn-pwa-download {
             background-color: #F1F5F9;
             color: var(--dark);
@@ -187,7 +216,7 @@
             transform: translateY(-2px);
         }
 
-        /* CORRECTION ET DESIGN SUBLIME POUR LE BOUTON FLÈCHE REMONTER EN HAUT */
+        /* BOUTON REMONTER EN HAUT */
         .back-to-top {
             position: fixed !important;
             bottom: 30px !important;
@@ -235,7 +264,7 @@
     </style>
 </head>
 
-<body>
+<body class="mode-desktop">
     <!-- Spinner de chargement -->
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -243,7 +272,7 @@
         </div>
     </div>
 
-    <!-- NAVBAR ORDINATEUR FIXE (SANS MENU HAMBURGER) -->
+    <!-- NAVBAR SAAS ORDINATEUR -->
     <nav class="navbar sticky-top custom-navbar">
         <div class="container-fluid px-5 d-flex align-items-center justify-content-between">
             <!-- Brand / Logo -->
@@ -284,8 +313,14 @@
                 </a>
             </div>
 
-            <!-- Actions d'accès & PWA -->
+            <!-- Actions : Bouton Mode Ordinateur + Installer l'App + Démarrer -->
             <div class="d-flex align-items-center gap-3">
+                <!-- NOUVEAU BOUTON BASCULE MODE ORDINATEUR / MOBILE -->
+                <button type="button" id="btnToggleDesktopMode" class="btn-toggle-desktop" title="Changer le mode d'affichage">
+                    <i class="bi bi-display fs-6" id="desktopIcon"></i>
+                    <span id="desktopText">Mode Ordinateur</span>
+                </button>
+
                 <button type="button" id="btnInstallPWA" class="btn-pwa-download" title="Installer l'application sur votre appareil">
                     <i class="bi bi-download text-primary fs-6"></i>
                     <span>Installer l'App</span>
@@ -339,7 +374,7 @@
         </div>
     </div>
 
-    <!-- BOUTON DE RETOUR EN HAUT PARFAITEMENT POSITIONNÉ ET DESIGNED -->
+    <!-- BOUTON REMONTER EN HAUT -->
     <a href="#" class="back-to-top" title="Remonter en haut">
         <i class="bi bi-arrow-up-short"></i>
     </a>
@@ -399,8 +434,44 @@
     <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
 
-    <!-- Gestion du défilement et affichage dynamique du bouton de retour en haut -->
+    <!-- SCRIPT DE BASCULEMENT MODE ORDINATEUR / MOBILE -->
     <script>
+        const btnToggleDesktop = document.getElementById('btnToggleDesktopMode');
+        const viewportMeta = document.getElementById('viewportMeta');
+        const desktopIcon = document.getElementById('desktopIcon');
+        const desktopText = document.getElementById('desktopText');
+
+        // Récupère l'état sauvegardé dans le navigateur (par défaut mode ordinateur)
+        let isDesktopMode = localStorage.getItem('view_mode') !== 'mobile';
+
+        function applyViewMode() {
+            if (isDesktopMode) {
+                // Mode Ordinateur Forcé
+                viewportMeta.setAttribute('content', 'width=1280, initial-scale=0.35, minimum-scale=0.2, maximum-scale=3.0, user-scalable=yes');
+                document.documentElement.classList.add('mode-desktop');
+                document.body.classList.add('mode-desktop');
+                desktopIcon.className = 'bi bi-phone fs-6';
+                desktopText.innerText = 'Mode Mobile';
+            } else {
+                // Mode Mobile Adaptatif
+                viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                document.documentElement.classList.remove('mode-desktop');
+                document.body.classList.remove('mode-desktop');
+                desktopIcon.className = 'bi bi-display fs-6';
+                desktopText.innerText = 'Mode Ordinateur';
+            }
+        }
+
+        // Appliquer directement au chargement
+        applyViewMode();
+
+        btnToggleDesktop.addEventListener('click', () => {
+            isDesktopMode = !isDesktopMode;
+            localStorage.setItem('view_mode', isDesktopMode ? 'desktop' : 'mobile');
+            applyViewMode();
+        });
+
+        // Gestion du défilement pour le bouton Remonter en haut
         $(window).scroll(function () {
             if ($(this).scrollTop() > 300) {
                 $('.back-to-top').addClass('show');
@@ -415,7 +486,7 @@
             return false;
         });
 
-        // Enregistrement du Service Worker PWA
+        // Service Worker PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register("{% static 'sw.js' %}")
