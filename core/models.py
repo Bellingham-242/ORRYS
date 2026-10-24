@@ -140,3 +140,25 @@ class ServiceRequest(models.Model):
 
     def __str__(self):
         return f"{self.nature} - {self.client.username}"
+
+
+class ServiceRequest(models.Model):
+    client = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': 'CLIENT'}, related_name='service_requests')
+    nature = models.CharField(max_length=200)
+    explanation = models.TextField()
+    image = models.ImageField(upload_to='requests/', blank=True, null=True)
+    is_read = models.BooleanField(default=False)
+    
+    # NOUVEAUX CHAMPS DE RÉPONSE
+    response = models.TextField("Réponse de l'administration", blank=True, null=True)
+    date_responded = models.DateTimeField("Date de réponse", blank=True, null=True)
+    
+    date_requested = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Demande de service"
+        verbose_name_plural = "Demandes de service"
+        ordering = ['-date_requested']
+
+    def __str__(self):
+        return f"{self.nature} - {self.client.username}"

@@ -1,7 +1,7 @@
 import random
 import string
 import datetime
-
+from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -175,6 +175,19 @@ def admin_dashboard(request):
     
     return render(request, 'dashboards/admin.html', context)
 
+
+@login_required
+def marquer_traite_service(request, pk):
+    if request.user.role not in ['ADMIN', 'GESTIONNAIRE']:
+        return redirect('login')
+    
+    service_req = get_object_or_404(ServiceRequest, pk=pk)
+    service_req.is_read = True
+    service_req.save()
+    
+    messages.success(request, f"La demande de {service_req.client.username} a été marquée comme traitée.")
+    return redirect('admin_dashboard')
+
 @login_required
 def gestionnaire_dashboard(request):
     if request.user.role not in ['GESTIONNAIRE', 'ADMIN']:
@@ -193,7 +206,9 @@ def employee_dashboard(request):
 
     mes_rapports = Rapport.objects.filter(employee=request.user).order_by('-date_submission')
     mes_activites_caisse = Transaction.objects.filter(auteur=request.user)[:10]
-    publications_locales = Publication.objects.filter(status='LOCAL').order_by('-date_creation')
+    
+    # Correction : On récupère à la fois les statuts 'LOCAL' et 'PUBLIC'
+    publications_locales = Publication.objects.filter(status__in=['PUBLIC', 'LOCAL']).order_by('-date_creation')
 
     context = {
         'mes_rapports': mes_rapports,
@@ -226,8 +241,41 @@ def client_dashboard_view(request):
             messages.error(request, "Veuillez remplir tous les champs obligatoires.")
 
     service_requests = ServiceRequest.objects.filter(client=request.user).order_by('-date_requested')
-    return render(request, 'dashboards/client.html', {'service_requests': service_requests})
+    
+    # Correction : Récupération des publications publiques pour les clients
+    publications_locales = Publication.objects.filter(status='PUBLIC').order_by('-date_creation')
 
+    context = {
+        'service_requests': service_requests,
+        'publications_locales': publications_locales, # <-- Ajouté ici
+        'pending_count': service_requests.filter(is_read=False).count(),
+    }
+    return render(request, 'dashboards/client.html', context)
+
+
+from django.utils import timezone
+
+@login_required
+def repondre_demande_service(request, request_id):
+    if request.user.role not in ['ADMIN', 'GESTIONNAIRE']:
+        messages.error(request, "Accès non autorisé.")
+        return redirect('admin_dashboard')
+
+    service_request = get_object_or_404(ServiceRequest, pk=request_id)
+
+    if request.method == 'POST':
+        response_text = request.POST.get('response')
+        if response_text:
+            service_request.response = response_text
+            service_request.is_read = True  # Marque automatiquement la demande comme prise en charge
+            service_request.date_responded = timezone.now()
+            service_request.save()
+            messages.success(request, f"Réponse transmise avec succès à {service_request.client.username}.")
+        else:
+            messages.error(request, "Le texte de réponse ne peut pas être vide.")
+
+    # Redirige vers la page d'origine de l'admin/gestionnaire
+    return redirect(request.META.get('HTTP_REFERER', 'admin_dashboard'))
 
 # ==========================================
 # 5. GESTION DE LA CAISSE
@@ -459,7 +507,55 @@ def publications_view(request):
     return render(request, 'publications/liste.html', {'pubs': pubs})
 
 @login_required
+def edit_publication(request, pk):
+    if request.user.role not in ['ADMIN', 'GESTIONNAIRE']:
+        return redirect('archives')
+    
+    publication = get_object_or_404(Publication, pk=pk)
+    if request.method == 'POST':
+        publication.title = request.POST.get('title')
+        publication.content = request.POST.get('content')
+        publication.status = request.POST.get('status', 'PUBLIC')
+        if 'image' in request.FILES:
+            publication.image = request.FILES['image']
+        publication.save()
+        messages.success(request, "Publication modifiée avec succès.")
+    return redirect(f"{reverse('archives')}?tab=pubs")
+
+@login_required
+def delete_publication(request, pk):
+    if request.user.role not in ['ADMIN', 'GESTIONNAIRE']:
+        return redirect('archives')
+        
+    publication = get_object_or_404(Publication, pk=pk)
+    publication.delete()
+    messages.success(request, "Publication supprimée avec succès.")
+    return redirect(f"{reverse('archives')}?tab=pubs")
+
+
+@login_required
 def archives_view(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        status = request.POST.get('status', 'PUBLIC')
+        image = request.FILES.get('image')
+        
+        if title and content:
+            try:
+                Publication.objects.create(
+                    title=title,
+                    content=content,
+                    status=status,
+                    image=image,
+                    author=request.user  # <-- Attribution automatique de l'auteur connecté
+                )
+                messages.success(request, "Publication créée avec succès.")
+            except Exception as e:
+                messages.error(request, f"Erreur lors de la publication : {e}")
+        
+        return redirect(f"{reverse('archives')}?tab=pubs")
+
     search_query = request.GET.get('search', '')
     active_tab = request.GET.get('tab', 'rapports')
 
@@ -494,7 +590,6 @@ def archives_view(request):
         'total_pubs': pubs_list.count(),
     }
     return render(request, 'dashboards/archives.html', context)
-
 
 @login_required
 @user_passes_test(is_staff_member)

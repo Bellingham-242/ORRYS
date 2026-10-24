@@ -309,6 +309,17 @@
                     <p class="text-muted small mb-0">Portail d'administration sécurisé</p>
                 </div>
 
+                <!-- Ajouté pour afficher les messages d'erreur (ex: compte en attente de validation) -->
+                {% if messages %}
+                    <div class="mb-3">
+                        {% for message in messages %}
+                            <div class="alert alert-danger py-2 small mb-2" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
                 <form method="post">
                     {% csrf_token %}
                     <div class="mb-3">

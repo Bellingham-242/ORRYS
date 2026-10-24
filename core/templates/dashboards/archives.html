@@ -13,8 +13,13 @@
             <p class="text-muted small mb-0">Gestion centralisée des rapports d'activité employés et des publications du site</p>
         </div>
 
-        <div class="d-flex gap-3 w-100 w-md-auto">
-            <div class="stat-card bg-white p-3 rounded-4 shadow-sm border border-light d-flex align-items-center gap-3 flex-grow-1 flex-md-grow-0">
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <!-- BOUTON NOUVELLE PUBLICATION -->
+            <button class="btn btn-primary rounded-3 fw-bold shadow-sm px-3 py-2" data-bs-toggle="modal" data-bs-target="#modalNewPub">
+                <i class="bi bi-megaphone-fill me-2"></i>+ Publication
+            </button>
+
+            <div class="stat-card bg-white p-3 rounded-4 shadow-sm border border-light d-flex align-items-center gap-3">
                 <div class="icon-box bg-primary-subtle text-primary rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
                     <i class="bi bi-file-earmark-text-fill fs-5"></i>
                 </div>
@@ -24,7 +29,7 @@
                 </div>
             </div>
 
-            <div class="stat-card bg-white p-3 rounded-4 shadow-sm border border-light d-flex align-items-center gap-3 flex-grow-1 flex-md-grow-0">
+            <div class="stat-card bg-white p-3 rounded-4 shadow-sm border border-light d-flex align-items-center gap-3">
                 <div class="icon-box bg-success-subtle text-success rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
                     <i class="bi bi-megaphone-fill fs-5"></i>
                 </div>
@@ -35,6 +40,18 @@
             </div>
         </div>
     </div>
+
+    <!-- AFFICHAGE DES MESSAGES DJANGO -->
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <!-- BARRE DE RECHERCHE & FILTRES -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
@@ -67,7 +84,7 @@
         </div>
     </div>
 
-    <!-- NAVEGATION PAR ONGLETS -->
+    <!-- NAVIGATION PAR ONGLETS -->
     <ul class="nav nav-pills custom-pills mb-4 p-1 bg-white rounded-pill shadow-sm border d-inline-flex" id="pills-tab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link {% if active_tab == 'rapports' %}active{% endif %} rounded-pill px-4 fw-bold" 
@@ -93,7 +110,7 @@
                 <div class="col-xl-4 col-md-6">
                     <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden card-hover transition-all">
                         
-                        <!-- SECTION IMAGE DU RAPPORT (Si présente) -->
+                        <!-- SECTION IMAGE DU RAPPORT -->
                         {% if r.fichier_joint or r.image %}
                         <div class="position-relative overflow-hidden bg-light" style="height: 160px;">
                             <img src="{% if r.fichier_joint %}{{ r.fichier_joint.url }}{% else %}{{ r.image.url }}{% endif %}" 
@@ -121,7 +138,6 @@
                             <h5 class="fw-800 text-dark mb-2 line-clamp-1">{{ r.title }}</h5>
                             <p class="text-muted small mb-4 flex-grow-1 line-clamp-3">{{ r.content }}</p>
 
-                            <!-- BOUTON SOMBRE SOUHAITÉ -->
                             <button type="button" 
                                     class="btn btn-dark btn-sm rounded-3 w-100 fw-bold py-2" 
                                     data-bs-toggle="modal" 
@@ -157,7 +173,6 @@
                                     <span class="text-muted small"><i class="bi bi-clock me-1"></i>Soumis le {{ r.date_submission|date:"d F Y à H:i" }}</span>
                                 </div>
 
-                                <!-- IMAGE COMPLÈTE DANS LA MODALE -->
                                 {% if r.fichier_joint or r.image %}
                                 <div class="mb-4 text-center bg-light p-2 rounded-3 border">
                                     <img src="{% if r.fichier_joint %}{{ r.fichier_joint.url }}{% else %}{{ r.image.url }}{% endif %}" 
@@ -251,14 +266,60 @@
                             <h5 class="fw-800 text-dark mb-2 line-clamp-1">{{ p.title }}</h5>
                             <p class="text-muted small mb-4 flex-grow-1 line-clamp-2">{{ p.content }}</p>
 
+                            <!-- BOUTONS MODIFIER & SUPPRIMER -->
                             <div class="d-flex gap-2 pt-2 border-top">
-                                <a href="#" class="btn btn-light btn-sm rounded-3 flex-grow-1 fw-bold text-dark border">
+                                <button type="button" class="btn btn-light btn-sm rounded-3 flex-grow-1 fw-bold text-dark border" data-bs-toggle="modal" data-bs-target="#editPub{{ p.id }}">
                                     <i class="bi bi-pencil me-1"></i> Modifier
-                                </a>
-                                <a href="#" class="btn btn-outline-danger btn-sm rounded-3 px-3" title="Supprimer">
+                                </button>
+                                <a href="{% url 'delete_publication' p.id %}" class="btn btn-outline-danger btn-sm rounded-3 px-3" title="Supprimer" onclick="return confirm('Voulez-vous vraiment supprimer cette publication ?');">
                                     <i class="bi bi-trash3"></i>
                                 </a>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODALE DE MODIFICATION DE LA PUBLICATION -->
+                <div class="modal fade" id="editPub{{ p.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                            <div class="modal-header bg-dark text-white p-4">
+                                <h5 class="modal-title fw-800 mb-0"><i class="bi bi-pencil-square me-2"></i>Modifier la publication</h5>
+                                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form method="POST" action="{% url 'edit_publication' p.id %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="modal-body p-4">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold text-dark small">Titre de la publication</label>
+                                        <input type="text" name="title" class="form-control rounded-3 shadow-none" value="{{ p.title }}" required>
+                                    </div>
+
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold text-dark small">Statut</label>
+                                            <select name="status" class="form-select rounded-3 shadow-none">
+                                                <option value="PUBLIC" {% if p.status == 'PUBLIC' %}selected{% endif %}>Public</option>
+                                                <option value="PENDING" {% if p.status == 'PENDING' %}selected{% endif %}>En attente</option>
+                                                <option value="LOCAL" {% if p.status == 'LOCAL' %}selected{% endif %}>Local</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold text-dark small">Changer l'image (Facultatif)</label>
+                                            <input type="file" name="image" class="form-control rounded-3 shadow-none">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold text-dark small">Contenu</label>
+                                        <textarea name="content" class="form-control rounded-3 shadow-none" rows="5" required>{{ p.content }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer bg-light border-0 p-3">
+                                    <button type="button" class="btn btn-light rounded-3 fw-bold text-muted" data-bs-dismiss="modal">Annuler</button>
+                                    <button type="submit" class="btn btn-primary rounded-3 fw-bold px-4">Enregistrer</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -297,6 +358,51 @@
                 </ul>
             </nav>
             {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- MODALE DE CRÉATION D'UNE PUBLICATION -->
+<div class="modal fade" id="modalNewPub" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-dark text-white p-4">
+                <h5 class="modal-title fw-800 mb-0"><i class="bi bi-megaphone-fill me-2"></i>Nouvelle Publication</h5>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark small">Titre de la publication</label>
+                        <input type="text" name="title" class="form-control rounded-3 shadow-none" placeholder="Ex: Lancement de la nouvelle version..." required>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small">Statut</label>
+                            <select name="status" class="form-select rounded-3 shadow-none">
+                                <option value="PUBLIC">Public</option>
+                                <option value="PENDING">En attente</option>
+                                <option value="LOCAL">Local</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small">Image d'illustration (Facultatif)</label>
+                            <input type="file" name="image" class="form-control rounded-3 shadow-none">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark small">Contenu de la publication</label>
+                        <textarea name="content" class="form-control rounded-3 shadow-none" rows="5" placeholder="Rédigez votre annonce ou publication ici..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0 p-3">
+                    <button type="button" class="btn btn-light rounded-3 fw-bold text-muted" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary rounded-3 fw-bold px-4">Publier</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

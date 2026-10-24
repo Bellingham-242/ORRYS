@@ -171,7 +171,8 @@
                     <div class="security-badge-zone mt-4 mb-4">
                         <span class="label-pro text-center">Code de sécurité requis</span>
                         <div class="security-code-display">{{ security_code }}</div>
-                        <input type="text" name="mot_validation" class="form-control text-center fw-bold border-2" placeholder="Recopiez le code ici" required>
+                        <!-- Correction ici : name="security_code" au lieu de name="mot_validation" -->
+                        <input type="text" name="security_code" class="form-control text-center fw-bold border-2" placeholder="Recopiez le code ici" required>
                     </div>
 
                     <button type="submit" class="btn-action-pro">
